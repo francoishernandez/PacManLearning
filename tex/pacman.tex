@@ -1,0 +1,570 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[a4paper, 11pt]{article} % Font size (can be 10pt, 11pt or 12pt) and paper size (remove a4paper for US letter paper)
+
+\usepackage{standalone}
+\usepackage{amsmath}
+
+\usepackage[a4paper,left=3cm,right=3cm]{geometry}
+
+\usepackage{indentfirst}
+%\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepackage{color}
+
+\usepackage{enumerate}
+
+\usepackage[protrusion=true,expansion=true]{microtype} % Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{wrapfig} % Allows in-line images
+
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage{pgf}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows}
+\usepackage{tkz-graph}
+\usetikzlibrary{shapes.multipart}
+
+\renewcommand{\thesection}{\Roman{section}}
+\usepackage{titlesec}
+%\titlespacing\section{0pt}{20pt plus 4pt minus 2pt}{-5pt plus 2pt minus 2pt}
+
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\lstset{
+%language=Java,
+basicstyle=\normalsize, % ou \c ca==> basicstyle=\scriptsize,
+upquote=true,
+aboveskip={1.2\baselineskip},
+columns=fullflexible,
+showstringspaces=false,
+extendedchars=true,
+breaklines=true,
+showtabs=false,
+showspaces=false,
+showstringspaces=false,
+identifierstyle=\ttfamily,
+keywordstyle=\color[rgb]{0,0,1},
+commentstyle=\color[rgb]{0.133,0.545,0.133},
+stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+
+\lstset{% This applies to ALL lstlisting
+    backgroundcolor=\color{yellow!10},%
+    numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=5pt,%
+    }%
+
+% Applies only when you use it
+\lstdefinestyle{MyLang}{
+    basicstyle=\small\ttfamily\color{magenta},%
+    breaklines=true,%                                      allow line breaks
+    moredelim=[s][\color{green!50!black}\ttfamily]{'}{'},% single quotes in green
+    moredelim=*[s][\color{black}\ttfamily]{options}{\}},%  options in black (until trailing })
+    commentstyle={\color{gray}\itshape},%                  gray italics for comments
+    morecomment=[l]{//},%                                  define // comment
+    emph={%
+        STRING%                                            literal strings listed here
+        },emphstyle={\color{blue}\ttfamily},%              and formatted in blue
+    alsoletter={:,|,;},%
+    morekeywords={:,|,;},%                                 define the special characters
+    keywordstyle={\color{black}},%                         and format them in black
+}
+
+\lstdefinestyle{Pyth}{
+	language=Python
+}
+
+
+\usepackage{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Required for accented characters
+\linespread{1.05} % Change line spacing here, Palatino benefits from a slight increase by default
+
+\makeatletter
+\renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
+\renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
+
+\renewcommand{\maketitle}{ % Customize the title - do not edit title and author name here, see the TITLE block below
+\begin{flushright} % Right align
+{\LARGE\@title} % Increase the font size of the title
+
+\vspace{50pt} % Some vertical space between the title and author name
+
+{\large\@author} % Author name
+\\\@date % Date
+
+\vspace{-20pt} % Some vertical space between the author block and abstract
+\end{flushright}
+}
+
+%----------------------------------------------------------------------------------------
+%	TITLE
+%----------------------------------------------------------------------------------------
+
+\title{\textbf{Théorie de la complexité des algorithmes}\\ % Title
+Problème des K-centres} % Subtitle
+
+\author{\textsc{Fran\c cois Hernandez - L\'eo Pons} % Author
+\\{\textit{CentraleSup\'elec}}} % Institution
+
+\date{\today} % Date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title section
+
+\pagebreak
+\tableofcontents
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT AND KEYWORDS
+%----------------------------------------------------------------------------------------
+
+%\renewcommand{\abstractname}{Summary} % Uncomment to change the name of the abstract to something else
+
+
+
+\vspace{30pt} % Some vertical space between the abstract and first section
+
+%----------------------------------------------------------------------------------------
+%	ESSAY BODY
+%----------------------------------------------------------------------------------------
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Le problème des K-centres est un problème d'optimisation combinatoire. Le problème peut se décrire de façon informelle ainsi (Wikipedia) : étant donné n villes, il faut ouvrir une caserne de pompiers dans k villes, tel que la distance entre chaque ville et la plus proche caserne soit minimisée.\\
+
+Il existe plusieurs définitions des problèmes K-centres. Ici, nous considérons la formulation suivante. Supposons un ensemble E de $n$ points dans un espace vectoriel ou un graphe complet muni d'une fonction de distance satisfaisant l'inégalité triangulaire. Il s'agit de trouver k "centroids" afin de minimiser la distance maximale entre un point de E et le centre le plus proche.\\
+
+Ce problème, dans sa forme problème de décision, est NP-complet.\\
+
+Au cours de ce projet, nous avons mis en place un programme en Java constituant une représentation du problème, et proposant différents algorithmes de résolution sur différents ensembles d'instances.\\
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=10cm]{screenIntro.png}
+\end{center}
+\end{figure}
+
+
+%------------------------------------------------
+\pagebreak
+
+\section{Implémentation}
+
+Nous avons choisi d'implémenter ce problème dans le langage Java. Nous avons mis en place des fonctions de génération et d'affichage d'instances (ensemble de points), ainsi que différents algorithmes de résolution à tester, et des méthodes de lecture et écriture des données sous format texte.\\
+
+Le programme comporte ainsi les packages suivants :
+\begin{itemize}
+\item \texttt{Generation} : contient les différentes classes de génération d'instances ainsi que celle associée à la lecture des fichiers .txt, toutes héritant de la classe abstraite \texttt{Generateur}~;
+\item \texttt{Graphics} : contient les différentes classes associées à l'affichage des instances ;
+\item \texttt{Resolution} : contient les différents algorithmes de résolution sous forme de classes filles de la classe générique abstraite \texttt{Algo} ;
+\item \texttt{Main} : contient le main qui permet de lancer les algorithmes de test, ainsi que la définition des différents objets utilisés ;
+\end{itemize}
+
+\subsection{Objets utilisés}
+
+Les objets utilisés dans ce programme sont définis de la façon suivante :
+\begin{itemize}
+\item \texttt{Point} : ensemble de coordonnées, ici \texttt{x} et \texttt{y} dans l'espace à deux dimensions ;
+\item \texttt{Instance} ensemble de $n$ \texttt{Points} sous forme d'\texttt{ArrayList}, et un attribut $k$ définissant le nombre de centres attendus, contient également une méthode permettant d'exporter l'instance au format .txt ;
+\item \texttt{Solution} : ensemble de $k$ \texttt{Points} constituant les centres d'une \texttt{Instance}, ainsi qu'un attribut $rayon$ définissant le rayon minimal pour lequel tous les points de l'instance sont couverts.
+\end{itemize}
+
+\subsection{Génération d'instances}
+
+Nous avons choisi d'implémenter deux classes de génération d'instances~:
+\begin{itemize}
+\item \texttt{Uniforme} : génère $n$ \texttt{Points} de façon aléatoire dans l'espace défini (en conservant des marges afin de ne pas avoir de points trop proches des bords, pour des raisons d'affichage) ;
+\item \texttt{Cluster} : détermine $n_{Cl}$  centres de clusters de façon aléatoire dans l'espace défini (en conservant une nouvelle fois des marges). On génère ensuite $n$ \texttt{Points} répartis uniformément sur les différents clusters. Les coordonnées de chaque point sont déterminés aléatoirement selon une loi normale, centrée sur le cluster correspondant et d'écart-type \texttt{sigma}. La taille des clusters est donc définie par \texttt{sigma} et est commune à tous les clusters. Elle est définie à la création de l'objet.
+\end{itemize}
+
+\subsection{Affichage des données}
+
+Afin d'avoir une représentation graphique claire des différentes instances et des résultats des algorithmes de résolution, nous avons choisi de définir une interface graphique à l'aide des outils \texttt{Swing}. Cela consiste en deux classes, \texttt{Fenetre} et \texttt{Panel}. \texttt{Fenetre} hérite de la classe \texttt{JFrame} et définit les caractéristiques de la fenêtre qui contiendra le \texttt{Panel}. \texttt{Panel} hérite de la classe \texttt{JPanel} et contient les méthodes associées au dessin des représentations. La méthode \texttt{paintComponent} dessine les différents éléments dans un \texttt{bufferGraphics}, attribut d'une image.
+
+\subsection{Algorithmes de résolution}
+
+Nous avons implémenté 4 algorithmes de résolution différents \textit{(détails en partie III)} :
+\begin{itemize}
+\item \texttt{Exact} : Calcule exactement la solution optimale. L'algorithme teste naïvement toutes les solutions possibles récursivement et est donc très coûteux en temps.
+\item \texttt{DeuxApprox} (approximation) : On construit la solution centre par centre : on commence par un point quelconque puis on cherche parmi les points non encore choisis celui qui est le plus éloigné de notre ensemble de centres. On itère ainsi jusqu'à avoir choisi $k$ centres.
+\item \texttt{Dominant} (approximation)  : On commence par calculer la liste des distances entre tous les points, qu'on trie par ordre croissant. Ensuite, on prend la première distance et on cherche une solution avec des disques de rayons égaux à cette distance. Si on trouve, on renvoie la solution, sinon, on passe à la distance suivante.
+\item \texttt{Descente} : Cet algorithme est un peu particulier : il améliore une solution déjà existante (en testant des permutations de centres).
+\end{itemize}
+
+\pagebreak
+
+\subsection{Conversion en fichier texte}
+
+Un standard d'export des instances a été défini afin de pouvoir sauvegarder et échanger différentes instances de test. Celui-ci est le suivant.
+
+\begin{lstlisting}
+nombre d'instances i
+
+n1, k1
+x1, y1, x2, y2, [...], xn1, yn1
+
+n2, k2
+x1, y1, x2, y2, [...], xn2, yn2
+
+[...]
+
+ni, ki
+x1, y1, x2, y2, [...], xni, yni
+\end{lstlisting}
+
+La méthode \texttt{createFile} de la classe \texttt{Instance} permet de créer de tels fichiers à l'aide de la classe \texttt{FileWriter} de Java.\\
+
+La classe \texttt{Importer} du package \texttt{Generation} permet de lire de tels fichiers à l'aide des classes \texttt{FileReader} et \texttt{BufferedReader} de Java.\\
+
+%------------------------------------------------
+%\pagebreak
+
+\section{Théorie, NP-complétude et approximation}
+
+Le problème K-centre, dans sa forme de problème de décision, est NP-complet, c'est à dire qu'il suit les conditions suivantes :
+\begin{itemize}
+\item il est possible de vérifier une solution en temps polynomial ; 
+\item il est possible de le réduire en un problème de la classe NP par une réduction polynomiale.
+\end{itemize}
+
+\subsection{Problème d'ensemble dominant}
+
+Soit un graphe $G = (S,A)$. Un ensemble dominant pour G est un sous-ensemble $D$ de l'ensemble des sommets $S$ de $G$ tel que tout sommet qui n'appartient pas au dominant soit adjacent à un de ses sommets.\\
+
+Le problème d'ensemble dominant consiste à déterminer, selon $G$ et un entier naturel $k$, si $G$ possède un ensemble dominant d'au plus $k$ sommets.\\
+
+$dom(G)$ est la taille de l'ensemble dominant le plus petit possible pour le graphe $G$. Trouver un ensemble dominant de taille minimale est un problème NP-complet. Il est possible de réduire le problème K-centre en un problème d'ensemble dominant afin de démontrer sa NP-complétude.\\
+
+\subsection{Réduction}
+
+Soit un graphe non orienté $G = (S,A)$ pour le problème de l'ensemble dominant. Considérons le graphe $G' = (S, S \times S)$ muni de la fonction de poids $d : S \times S \rightarrow \mathbb{R}$ pour ses arrêtes.
+
+\begin{align}
+  d(u,v)=
+  \begin{cases}
+    1  & \text{si }  (u,v) \in A\\
+    2alpha & \text{sinon } \\
+  \end{cases}
+\end{align}
+
+Supposons que G ait un ensemble dominant de taille inférieure ou égale à $k$.
+
+\begin{center}
+$dom(G) \leq k$
+\end{center}
+
+Dans ce cas, il existe une solution de poids $1$ au problème k-centre pour $G'$. Un algorithme d'$\alpha$-approximation fournit une solution de poids inférieur ou égal à $\alpha$, avec $\alpha \geq 1$ le facteur d'approximation.\\
+
+S'il n'existe pas un tel ensemble dominant dans $G$, alors toutes les instances de k-centre auront un poids supérieur ou égal à $2\alpha$, donc supérieur à $\alpha$.\\
+
+Supposons qu'il existe un algorithme d'$\alpha$-approximation pour le problème k-centre. Appliquons cet algorithme de décision sur $G'$. La solution a un poids inférieur ou égal à $\alpha$, donc il existe un ensemble dominant de taille inférieure ou égale à $k$. Autrement, il n'existe pas de tel ensemble dominant. Il y a donc contradiction. Le problème k-centre peut se réduire au problème de l'ensemble dominant, donc il est NP-complet.
+
+%------------------------------------------------
+\pagebreak
+
+\section{Méthodes de résolution}
+
+\subsection{Exact}
+
+Un premier algorithme est développé pour trouver la solution optimale d'une instance donnée, c'est à dire le choix de k centres qui minimise la distance maximale d'un point aux centres.\\
+
+On procède par récursivité : On construit une fonction qui renvoie une solution optimale (minimisant le rayon) pour une instance donnée sachant qu'une liste de centres est déjà fixée et qu'il reste un certain nombre de centres à choisir. Cette fonction fonctionne en testant tour à tour le choix des points restants et en s'appelant récursivement avec un centre de moins à choisir. On peut donc sélectionner le meilleur point et utiliser le résultat de l'appel récursif pour les points suivant.\\
+
+Notre solution principale est ainsi obtenue en appelant la fonction récursive avec le nombre de points à choisir original et avec une liste de points fixés vide. Cet algorithme est optimal mais très coûteux en terme de temps de calcul, ce qu'il le rend vite inutilisable.
+
+\subsection{DeuxApprox}
+
+Ce deuxième algorithme est une approximation qui permet de diminuer la complexité d'éxecution de l'algorithme exact. On construit la solution centre par centre : on commence par un point quelconque puis on cherche parmi les points non encore choisis celui qui est le plus éloigné de notre ensemble de centres. On itère ainsi jusqu'à avoir choisi tous les centres.\\
+
+Cet algorithme ne donne qu'un résultat approché (non optimal) mais est nettement moins gourmand en calcul, ce qui le rend largement plus utilisable que l'algorithme exact.
+
+\subsection{Dominant}
+
+Ce deuxième algorithme est une approximation, un peu plus exigeante que la précédente en termes de calcul mais donnant de meilleurs résultats. Il est basé sur la réduction au dominant qui a été présentée en partie II.\\
+
+On commence par calculer la liste des distances entre tous les points, qu'on trie par ordre croissant. Ensuite, on prend la première distance et on cherche une solution : on construit notre liste centre par centre, en choisissant à chaque fois le point qui possède le plus de voisins non couverts (par des disques de cette distance). Après avoir choisi $k$ centres, on regarde si tous les points sont couverts. Si oui, on renvoie la solution, sinon, on passe à la distance suivante.
+
+\subsection{Descente}
+
+Cet algorithme est un peu particulier : il améliore une solution déjà existante. Il faut donc commencer par choisir un algorithme qui déterminera la solution à manipuler, on pourra choisir notamment un des deux algorithmes approximatifs précédemment décrits.\\
+
+Pour chaque centre dans la solution obtenue par le premier algorithme, on va essayer de le permuter tour à tour avec les autres points de l'instance. Si la permutation améliore la solution, on la retient et on recommence. On s'arrête quand plus aucun échange n'améliore la solution.\\
+
+Cet algorithme est assez rapide et efficace, et il surtout toujours bon à appliquer à une solution obtenue par une autre heuristique.
+
+
+%------------------------------------------------
+\pagebreak
+
+\section{Évaluation des performances}
+
+Dans la mesure ou la génération d'instance repose sur des processus aléatoires, les performances peuvent varier d'une instance à l'autre. En conséquence, toutes les mesures renseignées dans cette partie sont des moyennes de 10 relevés de résultats sur des instances différentes.\\
+
+Afin de faciliter l'exploitation de ces mesures, nous avons mis en place un petit programme permettant d'exporter les tests effectués sur un certain nombre de valeurs du nombre de centres $k$ et du nombre de points $n$ dans des fichiers \texttt{.csv}. Ce code est présent dans le package \texttt{Main} dans la classe \texttt{Export.java}.\\
+
+\subsection{Comparaison d'algorithmes - Instances uniformes}
+
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[grid=major,
+xlabel={Nombre de points},
+ylabel={Rayon},
+%legend entries={k = 3, k = 5, k = 10, k = 20},
+legend style = {at = {(0.5,-0.2)}, anchor=north},
+legend columns = 2,
+height= 8cm,
+width = 12cm
+]
+
+\addlegendimage{color=blue,thick,solid}
+\addlegendentry{DeuxApprox}
+%\addlegendimage{color=red,thick,solid}
+%\addlegendentry{DeuxApprox avec Descente}
+\addlegendimage{color=red,thick,solid}
+\addlegendentry{Dominant}
+\addlegendimage{mark=*}
+\addlegendentry{$k=3$}
+\addlegendimage{mark=o}
+\addlegendentry{$k=5$}
+\addlegendimage{mark=star}
+\addlegendentry{$k=10$}
+\addlegendimage{mark=diamond*}
+\addlegendentry{$k=20$}
+
+% DeuxApprox
+
+\addplot[color=blue,mark=*] coordinates {(10,269) (25,352) (50,378) (100,416) (150,415) (175,383) (200,365) };
+\addplot[color=blue,mark=o] coordinates {(10,157) (25,207) (50,243) (100,271) (150,281) (175,280) (200,270) };
+\addplot[color=blue,mark=star] coordinates {(10,0) (25,124) (50,150) (100,167) (150,173) (175,173) (200,174) };
+\addplot[color=blue,mark=diamond*] coordinates {(25,39) (50,88) (100,100) (150,110) (175,111) (200,111)};
+
+
+% DeuxApprox avec Descente
+
+%\addplot[color=red,mark=*] coordinates  {(10,225) (25,252) (50,272) (100,286) (150,294) (175,292) (200,294) (500,302)};
+%\addplot[color=red,mark=o] coordinates {(10,164) (25,185) (50,193) (100,207) (150,208) (175,201) (200,228) (500,218)};
+%\addplot[color=red,mark=star] coordinates {(10,0) (25,118) (50,134) (100,139) (150,154) (175,146) (200,152) (500,158)};
+%\addplot[color=red,mark=diamond*] coordinates {(25,48) (50,83) (100,97) (150,100) (175,100) (200,105) (500,106)};
+
+% Dominant
+
+\addplot[color=red,mark=*] coordinates {(10,212) (25,258) (50,280) (100,309) (150,312) (200,310)};
+\addplot[color=red,mark=o] coordinates {(10,150) (25,182) (50,186) (100,199) (150,203) (200,213)};
+\addplot[color=red,mark=star] coordinates {(10,0) (25,107) (50,124) (100,141) (150,140) (200,145)};
+\addplot[color=red,mark=diamond*] coordinates {(25,47) (50,74) (100,89) (150,90) (200,95)};
+
+\end{axis}
+\end{tikzpicture}
+
+\caption{Rayon en fonction de $n$ et $k$ (Instances uniformes)}
+\end{center}
+\end{figure}
+
+
+On observe que pour des instances uniformes, quelque soit le nombre de centres, le rayon augmente avec le nombre de points. Cela peut s'expliquer par le fait que pour des instances uniformes, plus le nombre de points est élevé, moins il y a de "vide" entre les points, et la taille des disques devra donc être plus importante afin de tout couvrir.\\
+
+Par ailleurs, on remarque que l'algorithme \texttt{Dominant} permet d'avoir de bien meilleurs résultats que l'algorithme \texttt{DeuxApprox}, au détriment de la vitesse de calcul.\\
+
+Enfin, on peut aussi noter que, de façon évidente, pour un nombre de points égal au nombre de centres, le rayon approximé est bien nul.
+
+\subsection{Comparaison d'algorithmes - Instances en 10 clusters}
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[grid=major,
+xlabel={Nombre de points},
+ylabel={Rayon},
+%legend entries={k = 3, k = 5, k = 10, k = 20},
+legend style = {at = {(0.5,-0.2)}, anchor=north},
+legend columns = 2,
+height= 10cm,
+width = 13cm
+]
+
+\addlegendimage{color=blue,thick,solid}
+\addlegendentry{DeuxApprox}
+%\addlegendimage{color=red,thick,solid}
+%\addlegendentry{DeuxApprox avec Descente}
+\addlegendimage{color=red,thick,solid}
+\addlegendentry{Dominant}
+\addlegendimage{mark=*}
+\addlegendentry{$k=3$}
+\addlegendimage{mark=o}
+\addlegendentry{$k=5$}
+\addlegendimage{mark=star}
+\addlegendentry{$k=10$}
+\addlegendimage{mark=diamond*}
+\addlegendentry{$k=20$}
+
+% DeuxApprox
+
+\addplot[color=blue,mark=*] coordinates {(10,257) (25,353) (50,278) (100,290) (150,299) (175,327) (200,293) };
+\addplot[color=blue,mark=o] coordinates {(10,177) (25,201) (50,202) (100,204) (150,211) (175,233) (200,211) };
+\addplot[color=blue,mark=star] coordinates {(10,0) (25,116) (50,58) (100,67) (150,68) (175,115) (200,75) };
+\addplot[color=blue,mark=diamond*] coordinates {(25,22) (50,30) (100,39) (150,42) (175,52) (200,44) };
+
+
+% DeuxApprox avec Descente
+
+%\addplot[color=red,mark=*] coordinates {(10,153) (25,229) (50,152) (100,158) (150,156) (175,198) (200,159) (500,164)};
+%\addplot[color=red,mark=o] coordinates {(10,78) (25,151) (50,85) (100,85) (150,93) (175,156) (200,86) (500,100)};
+%\addplot[color=red,mark=star] coordinates {(10,0) (25,66) (50,46) (100,48) (150,51) (175,69) (200,56) (500,63)};
+%\addplot[color=red,mark=diamond*] coordinates {(25,21) (50,27) (100,32) (150,35) (175,40) (200,38) (500,42)};
+
+% Dominant
+
+\addplot[color=red,mark=*] coordinates {(10,177) (25,245) (50,175) (100,179) (150,183) (200,200)};
+\addplot[color=red,mark=o] coordinates {(10,99) (25,151) (50,102) (100,103) (150,104) (200,111)};
+\addplot[color=red,mark=star] coordinates {(10,0) (25,71) (50,42) (100,47) (150,49) (200,54)};
+\addplot[color=red,mark=diamond*] coordinates {(25,22) (50,24) (100,28) (150,31) (200,32)};
+
+
+
+\end{axis}
+\end{tikzpicture}
+
+\caption{Rayon en fonction de $n$ et du $k$ (10 clusters)}
+\end{center}
+\end{figure}
+
+Pour des instances contenant 10 clusters, on observe également une augmentation du rayon en fonction du nombre de points, mais plus légère que pour les instances uniformes. Cela est dû au fait que les points, même plus nombreux, sont concentrés autour de clusters d'une taille fixe.\\
+
+De façon assez logique, plus le nombre de centre est grand, plus le rayon est faible. Effectivement, un nombre de centre plus grand permet de couvrir autant de surface pour un rayon plus faible, et donc de contenir le même nombre d'instances pour un rayon plus faible.\\
+
+Par ailleurs, comme pour les instances uniformes, on remarque que l'algorithme \texttt{Dominant} permet d'avoir de bien meilleurs résultats que l'algorithme \texttt{DeuxApprox}, au détriment de la vitesse de calcul.
+
+\subsection{Comparaison selon les types d'instances}
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[grid=major,
+xlabel={Nombre de points},
+ylabel={Rayon},
+%legend entries={k = 3, k = 5, k = 10, k = 20},
+legend style = {at = {(0.5,-0.2)}, anchor=north},
+legend columns = 2,
+height= 10cm,
+width = 13cm
+]
+
+\addlegendimage{color=blue,thick,solid}
+\addlegendentry{Uniforme}
+%\addlegendimage{color=red,thick,solid}
+%\addlegendentry{DeuxApprox avec Descente}
+\addlegendimage{color=red,thick,solid}
+\addlegendentry{10 Clusters}
+\addlegendimage{mark=*}
+\addlegendentry{$k=3$}
+\addlegendimage{mark=o}
+\addlegendentry{$k=5$}
+\addlegendimage{mark=star}
+\addlegendentry{$k=10$}
+\addlegendimage{mark=diamond*}
+\addlegendentry{$k=20$}
+
+% DeuxApprox, uniforme
+
+\addplot[color=blue,mark=*] coordinates {(10,269) (25,352) (50,378) (100,416) (150,415) (175,383) (200,365) };
+\addplot[color=blue,mark=o] coordinates {(10,157) (25,207) (50,243) (100,271) (150,281) (175,280) (200,270) };
+\addplot[color=blue,mark=star] coordinates {(10,0) (25,124) (50,150) (100,167) (150,173) (175,173) (200,174) };
+\addplot[color=blue,mark=diamond*] coordinates {(25,39) (50,88) (100,100) (150,110) (175,111) (200,111)};
+
+
+
+
+% DeuxApprox, cluster
+
+\addplot[color=red,mark=*] coordinates {(10,257) (25,353) (50,278) (100,290) (150,299) (175,327) (200,293) };
+\addplot[color=red,mark=o] coordinates {(10,177) (25,201) (50,202) (100,204) (150,211) (175,233) (200,211) };
+\addplot[color=red,mark=star] coordinates {(10,0) (25,116) (50,58) (100,67) (150,68) (175,115) (200,75) };
+\addplot[color=red,mark=diamond*] coordinates {(25,22) (50,30) (100,39) (150,42) (175,52) (200,44) };
+
+
+
+\end{axis}
+\end{tikzpicture}
+
+\caption{Rayon en fonction de $n$ et $k$ - Uniforme vs. Clusters}
+\end{center}
+\end{figure}
+
+On observe que pour les instances uniformes le rayon est supérieur à celui pour les instances en clusters. Cela s'explique par le fait que pour ces dernières, les points sont regroupés en clusters, et donc par définition répartis de façon moins éparse dans l'espace.\\
+
+\subsection{Performances de la Descente}
+
+L'algorithme \texttt{Descente} doit être évalué différemment. En effet, il est utilisé pour améliorer des résultats obtenus avec d'autres algorithmes. On peut donc essayer d'observer son pouvoir d'amélioration. Pour fonctionner, il faut donner à l'algorithme un minimum d'opportunités de permutation. On choisira donc des instances à k=10 centres. En figure 4 nous pouvons observer ses effets sur l'algorithme \texttt{DeuxApprox} : c'est assez efficace ! On diminue le rayon de près de 10, et de manière assez notablement constante selon le nombre de noeuds. Cependant sur \texttt{Dominant}, en figure 5, c'est moins efficace. L'algorithme est déjà très performant, c'est donc difficile d'améliorer encore les résultats (c'est même presque toujours impossible pour des nombres faibles de points).\\
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[grid=major,
+xlabel={Nombre de points},
+ylabel={Rayon},
+legend entries={Avant descente, Après descente},
+legend style={at ={(0.9,0.9)}},
+height= 10cm,
+width = 12cm
+]
+
+% k =10, cluster 10, 15, deuxApprox, moyennés sur 10 expériences
+\addplot coordinates {(25,102) (50,58) (100,66) (200,68) (500,78)};
+\addplot coordinates {(25,87) (50,46) (100,52) (200,58) (500,64)};
+
+\end{axis}
+\end{tikzpicture}
+
+\caption{Performances de DeuxApprox avant et après utilisation de Descente.}
+\end{center}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[grid=major,
+xlabel={Nombre de points},
+ylabel={Rayon},
+legend entries={Avant descente, Après descente},
+legend style={at ={(0.9,0.9)}},
+height= 10cm,
+width = 12cm
+]
+
+% k =10, cluster 10, 15, deuxApprox, moyennés sur 10 expériences
+\addplot coordinates {(25,80) (50,38) (100,46) (200,53)};
+\addplot coordinates {(25,80) (50,38) (100,44) (200,50)};
+
+\end{axis}
+\end{tikzpicture}
+
+\caption{Performances de Dominant avant et après utilisation de Descente.}
+\end{center}
+\end{figure}
+
+%------------------------------------------------
+
+%\pagebreak
+%\section*{Conclusion}
+%\addcontentsline{toc}{section}{Conclusion}
+
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
