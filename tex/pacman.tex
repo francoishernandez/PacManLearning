@@ -227,25 +227,66 @@ La condition est donc :
 L'idée est d'estimer la Q-function d'une politique optimale $Q_{opt}$ et d'utiliser la formule XXX pour trouver $\pi_{opt}$.
 
 Pour cela, un moyen est d'entraîner un réseau de neurones de paramètres $\theta$ avec la fonction de perte suivante :
-$L(\theta) = \sum_{(s,a,r,s')} (Q_{opt}(s,a;\theta) - (r+\gamma V_{opt}))
 
-\subsection{Deep Q-Learning and Convolutional Neural Networks}
-
-\subsection{Recurrent Neural Networks}
+\begin{eqnarray}
+L(\theta) = \sum_{(s,a,r,s')} (Q_{opt}(s,a;\theta) - (r+\gamma V_{opt}))
+\end{eqnarray}
 
 \subsection{Architectures}
 
+\subsubsection{Inception-LSTM}
 
+La première architecture vise à tester l'effet du transfer learning sur la capacité d'apprentissage du réseau. Le transfer learning, discipline à part entière, consiste à utiliser une partie d'un réseau déjà entraîné pour extraire des features dans une autre architecture. L'architecture suit le déroulement suivant :
+\begin{enumerate}
+\item extraction de features à partir des images brutes, utilisation de Google Inception v3 (fourth max-pool) : EXPLIQUER ? ;
+\item alimentation d'un fully connected layer avec les features extraites ;
+\item ajout d'une couche LSTM (Long Short-Term Memory, les états cachés contiennent la mémoire des actions passées) ;
+\item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
+\end{enumerate}
 
-\subsubsection{LSTM et CNN}
+L'architecture est résumée par le schéma figure XXX.
 
-\subsubsection{CNN et RNN}
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{inception-lstm.png}
+\caption{Architecture Inception-LSTM}
+\end{center}
+\end{figure}
 
-\subsubsection{CNN et 
+\subsubsection{Convolutional-LSTM}
+
+Ensuite, une architecture entraînée à partir de zéro est proposée. Elle suit le déroulement suivant :
+\begin{enumerate}
+\item trois couches de pooling (avec couche de correction) ;
+\item deux couches de réseaux fully connected FC1 et FC2 ;
+\item ajout d'une couche LSTM ;
+\item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
+\end{enumerate}
+
+L'architecture est résumée par le schéma figure XXX.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{conv-lstm.png}
+\caption{Architecture Inception-LSTM}
+\end{center}
+\end{figure}
+
+\subsubsection{CNN et}
 
 \subsection{Supervised Learning}
 
 \subsection{Resultats}
+
+\subsection{Extraction des features}
+
+\paragraph{Avantages de l'ajout d'un Fully Connected layer plutôt qu'un Fully Convolutional}
+
+\begin{itemize}
+\item input image size ;
+\item spatial information ;
+\item computational cost and representation power ;
+\end{itemize}
 
 
 Ajout de LSTM --> ajout de robustesse
