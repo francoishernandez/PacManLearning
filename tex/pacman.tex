@@ -155,11 +155,50 @@ Blabla
 LOUIS
 
 %------------------------------------------------
-%\pagebreak
+\pagebreak
 
 \section{Solutions envisageables}
 
-LEO
+Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant $t$ l'action à effectuer maximisant la la récompense totale espérée $R$ décrite en partie précédente.\\
+
+On considèrera pour cela la value function qui renseigne l'espérance du résultat pour une politique et un état initial donnés :
+
+\begin{eqnarray}
+V_\pi(s_0) = E[R\mid(s_0,\pi)]
+\end{eqnarray}
+\vspace{0.1cm}
+
+Trouver une politique optimale revient donc à maximiser $V_\pi$. On notera sa forme optimale :
+
+\begin{eqnarray}
+V_{opt}(s_0) = \arg\max_{\pi} V_\pi(s_0)
+\end{eqnarray}
+\vspace{0.1cm}
+
+On définit d'une manière similaire la Q-value qui renseigne l'espérance du résultat pour une politique et un état initial donnés, à la différence cette fois-ci que la première action effectuée $a_0$ est déterminée. La politique n'est appliquée que pour les actions suivantes. 
+
+\begin{eqnarray}
+Q_\pi(s_0,a_0) = E[R\mid(s_0,a_0,\pi)]
+\end{eqnarray}
+\vspace{0.1cm}
+
+Et on notera de la même manière $Q_{opt}$ la Q-value pour une politique optimale.\\
+
+Pour agir de manière optimale, il suffit donc de connaître $Q_{opt}$. En effet à tout instant, dans un état donné, il suffit de choisir l'action maximisant $Q_{opt}$. En raisonnant récursivement, on sait que la suite de nos actions seront optimales, ce qui valide le choix de notre action (qui n'est acceptable que si suivi d'une politique optimale, d'après la définition de la Q-value). On note donc :
+
+\begin{eqnarray}
+\pi_{opt}(s) = \arg\max_{a \in A} Q_{opt}(s,a)
+\end{eqnarray}
+\vspace{0.1cm}
+
+Ces définitions étant données, plusieurs premières approches sont envisageables :\\
+
+\subsection{Value iteration}
+
+\subsection{Reinforcement Learning}
+
+\subsection{Deep Q-Learning}
+
 
 %------------------------------------------------
 \pagebreak
