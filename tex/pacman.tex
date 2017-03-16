@@ -216,7 +216,7 @@ V_{i+1}(s) := \max_{a \in A} \Bigl\{ \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') +
 
 Pour tout $s \in S$ on initialise $V_0(s)$ aléatoirement ou par intuition, puis à chaque itération, on met à jour la valeur de $V$ selon la formule ci-dessus, toujours pour chaque état $s$ possible. On continue jusqu'à convergence, ce qui nous donne ainsi les valeurs $V_{opt}(s)$ pour tout $s$. On peut ainsi facilement retrouver $Q_{opt}$ à l'aide de (5) et donc notre politique optimale avec (4).\\
 
-Le problème de ce type de stratégie est la nécessité de calculer à l'avance $V$ pour tous les états $s$ envisageables, ce qui est vite problématique quand l'espace des états est grand. En particulier, pour le Pacman, les états résultants des différentes combinaisons des positions du Pacman, des fantômes, de la nourriture etc... Le nombre d'états est beaucoup trop pour procéder ainsi.
+Le problème de ce type de stratégie est la nécessité de calculer à l'avance $V$ pour tous les états $s$ envisageables, ce qui est vite problématique quand l'espace des états est grand. En particulier, pour le Pacman, les états résultants des différentes combinaisons des positions du Pacman, des fantômes, de la nourriture etc. le nombre d'états est beaucoup trop grand pour procéder ainsi.
 
 
 \subsection{Reinforcement Learning}
