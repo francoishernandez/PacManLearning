@@ -166,6 +166,51 @@ LEO
 
 \section{Modèles et résultats}
 
+Nous allons dans cette partie nous intéresser aux modèles présentés et implémentés dans l'article \textit{Recurrent Deep Q-Learning for PAC-MAN} (Kushal Ranjan, Amelia Christensen, Bernardo Ramos, \textsc{Stanford}) ainsi qu'aux résultats obtenus.
+
+But : developper un agent d'apprentissage renforcé pour PAC-MAN, avec une combinaison de CNN et RNN, et des unités LSTM pour modéliser la Q-value function Q(s,a).
+
+\subsection{Reinforcement learning}
+
+La théorie a été présentée en détail dans la partie XXX.\\
+
+En résumé, nous disposons d'une chaîne de décision de Markov comportant l'ensemble des configurations de PAC-MAN (position, fantômes, nourriture) ainsi que l'ensemble des actions possibles (gauche, droite, haut, bas, rester). L'idée est de maximiser la value function $V_{\pi}$ pour trouver la politique optimale $\pi$. La Q-value a donc été définie de la façon suivante :
+\begin{eqnarray}
+Q_{\pi}(s,a) = \sum_{s'} T(s,a,s')(Reward(s,a,s')+\gamma V_{\pi}(s'))
+\end{eqnarray}
+
+La condition est donc :
+
+\begin{eqnarray}
+\pi_{opt}(s) = \operatorname{arg\,max}_{a\in A} Q_{\pi_{opt}}(s,a) \forall s \in S
+\end{eqnarray}
+
+L'idée est d'estimer la Q-function d'une politique optimale $Q_{opt}$ et d'utiliser la formule XXX pour trouver $\pi_{opt}$.
+
+Pour cela, un moyen est d'entraîner un réseau de neurones de paramètres $\theta$ avec la fonction de perte suivante :
+$L(\theta) = \sum_{(s,a,r,s')} (Q_{opt}(s,a;\theta) - (r+\gamma V_{opt}))
+
+\subsection{Deep Q-Learning and Convolutional Neural Networks}
+
+\subsection{Recurrent Neural Networks}
+
+\subsection{Architectures}
+
+
+
+\subsubsection{LSTM et CNN}
+
+\subsubsection{CNN et RNN}
+
+\subsubsection{CNN et 
+
+\subsection{Supervised Learning}
+
+\subsection{Resultats}
+
+
+Ajout de LSTM --> ajout de robustesse
+
 FRANCOIS
 
 %------------------------------------------------
