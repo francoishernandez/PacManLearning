@@ -157,9 +157,11 @@ LOUIS
 %------------------------------------------------
 \pagebreak
 
-\section{Solutions envisageables}
+\section{Solutions envisageables (Léo)}
 
-Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant $t$ l'action à effectuer maximisant la la récompense totale espérée $R$ décrite en partie précédente.\\
+\subsection{Définitions}
+
+Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant l'action à effectuer maximisant la la récompense totale espérée $R$ décrite en partie précédente.\\
 
 On considèrera pour cela la value function qui renseigne l'espérance du résultat pour une politique et un état initial donnés :
 
@@ -184,16 +186,38 @@ Q_\pi(s_0,a_0) = E[R\mid(s_0,a_0,\pi)]
 
 Et on notera de la même manière $Q_{opt}$ la Q-value pour une politique optimale.\\
 
-Pour agir de manière optimale, il suffit donc de connaître $Q_{opt}$. En effet à tout instant, dans un état donné, il suffit de choisir l'action maximisant $Q_{opt}$. En raisonnant récursivement, on sait que la suite de nos actions seront optimales, ce qui valide le choix de notre action (qui n'est acceptable que si suivi d'une politique optimale, d'après la définition de la Q-value). On note donc :
+Pour agir de manière optimale, il suffit donc de connaître $Q_{opt}$. En effet à tout instant, dans un état donné, il suffit de choisir l'action maximisant $Q_{opt}$. En raisonnant récursivement, on sait que la suite de nos actions seront optimales, ce qui valide le choix de notre action (qui n'est acceptable que si suivi d'une politique optimale, d'après la définition de la Q-value (3) ). On note donc :
 
 \begin{eqnarray}
 \pi_{opt}(s) = \arg\max_{a \in A} Q_{opt}(s,a)
 \end{eqnarray}
 \vspace{0.1cm}
 
-Ces définitions étant données, plusieurs premières approches sont envisageables :\\
+
+On peut aussi retrouver $Q$ à partir de $V$ :
+
+\begin{eqnarray}
+Q_{\pi}(s,a) = \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_\pi(s')
+\end{eqnarray}
+\vspace{0.1cm}
+
+Où, comme précisé en première partie, $T(s,a,s')$ est la probabilité de tomber dans l'état $s'$ suite au choix de l'action $a$ depuis $s$, $Reward(s,a,s')$ la récompense associée à cette transition, et $\gamma$ le facteur de dévaluation temporel.\\
+
+Ces définitions étant données, plusieurs premières approches sont envisageables.
 
 \subsection{Value iteration}
+
+En supposant la connaissance complète du système, un première approche consiste à calculer la politique ou la value function itérativement, en précisant leurs valeurs jusqu'à convergence. Plusieurs variantes existent, la plus notable étant la "value iteration", où l'on procède uniquement par itération sur la value function :
+
+\begin{eqnarray}
+V_{i+1}(s) := \max_{a \in A} \Bigl\{ \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_i(s') \Bigr\}
+\end{eqnarray}
+\vspace{0.1cm}
+
+Pour tout $s \in S$ on initialise $V_0(s)$ aléatoirement ou par intuition, puis à chaque itération, on met à jour la valeur de $V$ selon la formule ci-dessus, toujours pour chaque état $s$ possible. On continue jusqu'à convergence, ce qui nous donne ainsi les valeurs $V_{opt}(s)$ pour tout $s$. On peut ainsi facilement retrouver $Q_{opt}$ à l'aide de (5) et donc notre politique optimale avec (4).\\
+
+Le problème de ce type de stratégie est la nécessité de calculer à l'avance $V$ pour tous les états $s$ envisageables, ce qui est vite problématique quand l'espace des états est grand. En particulier, pour le Pacman, les états résultants des différentes combinaisons des positions du Pacman, des fantômes, de la nourriture etc. le nombre d'états est beaucoup trop grand pour procéder ainsi.
+
 
 \subsection{Reinforcement Learning}
 
