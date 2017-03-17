@@ -184,15 +184,15 @@ L'image ci-dessous représente une succession d'états. Nous voyons que pour passe
 
 En reprenant le formalisme introduit précédemment, on a :
 
-\begin{eqnarray}
+\begin{eqnarray*}
 T(s_1, left, s_2) = 1
-\end{eqnarray} 
-\begin{eqnarray}
+\end{eqnarray*} 
+\begin{eqnarray*}
 T(s_2, left, s_A) = 0.5
-\end{eqnarray} 
-\begin{eqnarray}
+\end{eqnarray*} 
+\begin{eqnarray*}
 T(s_2, left, s_B) = 0.5
-\end{eqnarray}
+\end{eqnarray*}
 \vspace{0.1cm}
 
 
@@ -201,7 +201,7 @@ En réalité, $T$ devrait aussi avoir en paramètre l'état précédent. Pour simplifi
 %------------------------------------------------
 \pagebreak
 
-\section{Solutions envisageables (Léo)}
+\section{Solutions envisageables}
 
 \subsection{Définitions}
 
@@ -241,7 +241,7 @@ Pour agir de manière optimale, il suffit donc de connaître $Q_{opt}$. En effet à
 On peut aussi retrouver $Q$ à partir de $V$ :
 
 \begin{eqnarray}
-Q_{\pi}(s,a) = \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_\pi(s')
+Q_{\pi}(s,a) = \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_\pi(s'))
 \end{eqnarray}
 \vspace{0.1cm}
 
@@ -254,7 +254,7 @@ Ces définitions étant données, plusieurs premières approches sont envisageables.
 En supposant la connaissance complète du système, un première approche consiste à calculer la politique ou la value function itérativement, en précisant leurs valeurs jusqu'à convergence. Plusieurs variantes existent, la plus notable étant la "value iteration", où l'on procède uniquement par itération sur la value function :
 
 \begin{eqnarray}
-V_{i+1}(s) := \max_{a \in A} \Bigl\{ \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_i(s') \Bigr\}
+V_{i+1}(s) := \max_{a \in A} \Bigl\{ \sum\limits_{s'} T(s,a,s')(Reward(s,a,s') + \gamma V_i(s')) \Bigr\}
 \end{eqnarray}
 \vspace{0.1cm}
 
@@ -265,8 +265,50 @@ Le problème de ce type de stratégie est la nécessité de calculer à l'avance $V$ 
 
 \subsection{Reinforcement Learning}
 
-\subsection{Deep Q-Learning}
+Une autre solution envisagée est donc celle du Reinforcement Learning. Dans ce type d'apprentissage, l'agent apprend à partir de sa propre expérience. On n'a donc pas besoin de connaître parfaitement le système et d'effectuer le lourd calcul préalable de la Value iteration.
 
+\subsubsection{Q-Learning}
+
+Un algorithme de Reinforcement Learning classique est celui du Q-Learning. Dans cette approche, on cherche à estimer les valeurs $Q_{opt}(s,a)$ qui correspondent à la qualité d'une action $a$ dans un état $s$. On construit une matrice $Q_{table}$ de taille $(card(S), card(A))$ qui contient nos approximations $\hat{Q}_{opt}(s,a)$, on initialise arbitrairement ces valeurs (par exemple à 0), puis on commence une partie et on itère :
+\begin{itemize}
+\item Au vu de l'état actuel $s$, on choisit la meilleure action $a$ c'est à dire celle qui donne à la lecture de la matrice $Q_{table}$ la valeur de $\hat{Q}_{opt}(s,a)$ la plus élevée. 
+\item On effectue l'action et on récupère la récompense observée $r$ et le nouvel état $s'$.
+\item On met à jour $\hat{Q}_{opt}(s,a)$ dans la matrice $Q_{table}$ selon (7) et on recommence (si $s'$ est un état final, on commence une nouvelle partie).
+\end{itemize}
+
+\begin{eqnarray}
+\hat{Q}_{opt}(s,a) := \hat{Q}_{opt}(s,a) + \alpha \Bigl\{ r + \gamma \max_{a' \in A} \hat{Q}_{opt}(s',a') - \hat{Q}_{opt}(s,a) \Bigr\}
+\end{eqnarray}
+\vspace{0.1cm}
+
+On construit ainsi notre matrice $Q_{table}$ par l'expérience, notre agent apprenant de ses récompenses avec $\alpha$ comme vitesse d'apprentissage. On notera que les valeurs de $\hat{Q}_{opt}(s,a)$ pour $s$ état final ne sont jamais mises à jour, elles devront être correctement initialisées. On pourra aussi introduire un facteur d'exploration $\epsilon$ qui décrit la probabilité de choisir une action au hasard plutôt que de la choisir selon les valeurs de $\hat{Q}_{opt}(s,a)$.\\
+
+En laissant l'agent parcourir les différents états possibles, cette méthode donne vite de très bons résultats. Cependant encore une fois, le Pacman présente un nombre d'états possibles très grand qui sont ainsi difficiles à parcourir entièrement. La méthode du Q-Learning simple n'est donc pas efficace sur ce jeu, mais des variantes sont envisageable, comme celle du Deep Q-Learning.
+
+\subsubsection{Deep Q-Learning}
+
+Le principe du Deep Q-Learning peut se résumer en une idée : remplacer la matrice $Q_{table}$ par un réseau de neurones $Q_{network}$.\\
+
+En effet, le problème du Q-Learning est qu'il estime $\hat{Q}_{opt}(s,a)$ pour un état et une action précise, et qu'il ne généralise pas ses résultats aux situations similaires (chaque couple $(s,a)$ correspond bien à une valeur unique dans la matrice). Ainsi, quand le nombre de couples devient trop élevés, l'agent met trop de temps à tous les explorer et converger.\\
+
+L'idée du Deep Q-Learning est donc de généraliser l'apprentissage sur une situation à l'ensemble des situations, en utilisant un modèle de machine learning. On construit donc un réseaux de neurones $Q_{network}$ qui prend en entrée un état $s$ et qui renvoie en sortie $n$ valeurs $\hat{Q}_{opt}(s,a)$, avec $n=card(A)$. Le rôle de $Q_{table}$ étant de donner $\hat{Q}_{opt}(s,a)$ pour un couple $(s,a)$ donné, on peut donc effectuer l'algorithme du Q-Learning en utilisant $Q_{network}$ à la place. L'étape de mise à jour de la valeur est remplacée par une ré-évaluation des poids du réseaux de neurones en considérant le résultat de l'expérience.\\
+
+Pour résumer, on initialise un réseau de neurones $Q_{network}$, puis on commence une partie et on itère :
+\begin{itemize}
+\item On passe l'état actuel $s$ dans $Q_{network}$, ce qui nous donne nos différentes valeurs $\hat{Q}_{opt}(s,a)$ pour $a\in A$. On choisit la meilleure action $a$ c'est à dire celle associée à la valeur la plus élevée. 
+\item On effectue l'action et on récupère la récompense observée $r$ et le nouvel état $s'$.
+\item On passe le nouvel état $s'$ dans $Q_{network}$, ce qui nous donne nos différentes valeurs $\hat{Q}_{opt}(s',a)$ pour $a\in A$. On récupère ainsi $\max_{a' \in A} \hat{Q}_{opt}(s',a')$.
+\item On fixe $r + \gamma \max_{a' \in A} \hat{Q}_{opt}(s',a')$ comme nouvelle valeur cible de $\hat{Q}_{opt}(s,a)$, et on garde les valeurs obtenues à la première étape pour les autres actions.
+\item On met à jour les poids de $Q_{network}$ par backpropagation et on recommence (si $s'$ est un état final, on commence une nouvelle partie).
+\end{itemize}
+
+On peut encore une fois introduire un facteur d'exploration $\epsilon$. Une autre astuce efficace est celle de l'expérience replay. L'idée est de stocker chaque nouvelle observation dans une \texttt{replay memory}, et d'entrainer à chaque étape le réseau non pas avec une unique nouvelle valeur mais avec un mini-batch tiré aléatoirement parmi la \texttt{replay memory}. Cette technique permet d'éviter de tomber dans certains minima locaux et elle permet surtout d'accélérer le début de l'entrainement du réseau en peuplant la \texttt{replay memory} par des données extérieures, comme des parties jouées par un humain ou une autre IA.\\
+
+Du point de vue de la modélisation du problème, plusieurs solutions sont envisageables pour structurer les données en un vecteur de features. L'idée ici est de travailler sur les images brutes, sans modéliser d'avantage, de manière à créer un modèle général, utilisable notamment pour les jeux Atari, non dépendant de spécificités du Pacman. Chaque état est alors simplement représenté par l'ensemble de ses pixels, ou alors dans certaines modélisations par l'ensemble des pixels des dernières images (pour traduire la notion de mouvement). Ce choix de modélisation nous incite à travailler en Deep Learning, réputé pour son efficacité avec les images.\\
+
+De nombreuses questions propres au Deep Learning se posent alors, comme évoqué en partie III.\\
+
+\subsection{Supervised Learning}
 
 %------------------------------------------------
 \pagebreak
