@@ -258,6 +258,16 @@ L(\theta) = \sum_{(s,a,r,s')} (Q_{opt}(s,a;\theta) - (r+\gamma V_{opt}))
 
 \subsection{Architectures}
 
+\paragraph{Remarques}
+
+L'utilisation d'un fully connected layer est permises car le problème est dans a situation suivante :
+\begin{itemize}
+\item input image size ;
+\item spatial information ;
+\item computational cost and representation power ;
+\end{itemize}
+
+
 \subsubsection{Inception-LSTM}
 
 La première architecture vise à tester l'effet du transfer learning sur la capacité d'apprentissage du réseau. Le transfer learning, discipline à part entière, consiste à utiliser une partie d'un réseau déjà entraîné pour extraire des features dans une autre architecture. L'architecture suit le déroulement suivant :
@@ -270,9 +280,9 @@ La première architecture vise à tester l'effet du transfer learning sur la capac
 
 L'architecture est résumée par le schéma figure XXX.
 
-\begin{figure}
+\begin{figure}[!h]
 \begin{center}
-\includegraphics[width=0.8\textwidth]{inception-lstm.png}
+\includegraphics[width=0.7\textwidth]{inception-lstm.png}
 \caption{Architecture Inception-LSTM}
 \end{center}
 \end{figure}
@@ -289,28 +299,45 @@ Ensuite, une architecture entraînée à partir de zéro est proposée. Elle suit le 
 
 L'architecture est résumée par le schéma figure XXX.
 
-\begin{figure}
+\begin{figure}[!h]
 \begin{center}
-\includegraphics[width=0.8\textwidth]{conv-lstm.png}
+\includegraphics[width=0.7\textwidth]{conv-lstm.png}
 \caption{Architecture Inception-LSTM}
 \end{center}
 \end{figure}
 
-\subsubsection{CNN et}
+\subsubsection{Convolutional sans mémoire}
 
-\subsection{Supervised Learning}
+L'objectif de cette architecture est de fournir un benchmark similaire à l'architecture précédente, mais sans la couche LSTM dotée de mémoire. Elle suit le déroulement suivant :
+\begin{enumerate}
+\item trois couches de pooling (avec couche de correction) ;
+\item une couche de réseau fully connected FC1 ;
+\item une couche de réseau fully connected FC2 de sortie de taille 5, qui fournit directement les Q-values.
+\end{enumerate}
 
-\subsection{Resultats}
+\subsection{Implémentation, résultats et analyses}
+
+Ces méthodes sont implémentées à l'aide de TensorFlow, sur une version pré-existante de PAC-MAN en Python (cf. Berkeley's Introduction to Artificial Intelligence).
+
+\paragraph{Training set}
+
+La base du training set est composée des images RGB brutes, de deux dispositions différentes :
+\begin{itemize}
+\item une grille simple, de taille 5x6, avec 4 éléments de nourriture et un fantôme ;
+\item une grille plus large, avec beaucoup de nourriture et plusieurs fantômes.
+\end{itemize}
+
+Ces images ont été récupérées avec \texttt{ImageGrab}. Un dataset de 6500 images étiquetées a été créé en jouant à PAC-MAN manuellement.	
+Elles sont ensuite ré-échantillonnées avec \texttt{opencv} pour passer d'une résolution de 540x540 à 224x224 afin de pouvoir utiliser Inception V3 pour extraire les features.
+
+
+
+
+
+
 
 \subsection{Extraction des features}
 
-\paragraph{Avantages de l'ajout d'un Fully Connected layer plutôt qu'un Fully Convolutional}
-
-\begin{itemize}
-\item input image size ;
-\item spatial information ;
-\item computational cost and representation power ;
-\end{itemize}
 
 
 Ajout de LSTM --> ajout de robustesse
