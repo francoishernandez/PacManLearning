@@ -152,7 +152,51 @@ Blabla
 
 \section{Description du problème}
 
-LOUIS
+\subsection{Processus de décision Markovien}
+
+Pacman est un jeu non déterministe puisque l'état suivant n'est pas uniquement déterminée par l'action du joueur. En effet, lorsque les fantômes se trouvent à des croisements, ils peuvent choisir leur direction de manière aléatoire. \\
+
+Pour représenter ce non-déterminisme, on modélise notre jeu comme un processus de décision markovien (MDP). Un processus de décision markovien est un processus stochastique basé sur l'hypothèse de Markov : les probabilités de transitions ne dépendent que des $n$ états précédents. \\
+
+Plus formellement, un processus de décision markovien est défini par :
+\begin{itemize}
+\item Un ensemble d'états $s \in  S$
+\item Un ensemble d'actions $a \in  A$
+\item Une fonction de transition $T(s,a,s')$
+\item Une fonction de récompense $R(s,a,s')$
+\item Un état de départ $start \in S$
+\end{itemize}
+
+Avec ce formalisme, le but du jeu est de déterminer une politique de déplacement $\pi : S \rightarrow A$ qui maximise le total des récompenses $R(s,a,s')$ obtenues sur toute la durée de la partie.
+
+\subsection{Pacman comme MDP}
+
+Le fonctionnement du Pacman correspond bien à un processus de décision markovien. En effet les probabilités de transitions d'un état $s$ à un état $s'$ ne dépendent que de l'état $s$ et de l'état précédant $s$. L'ensemble des actions possibles est alors $A = \{up, down, left, right, stay\}$ et un état $s$ est défini par la position du Pacman, ainsi que par les positions des récompenses et des fantômes.\\
+
+Le non-déterminisme n'opère qu'au niveau des déplacements des fantômes, avec comme seule contrainte qu'il ne peuvent pas faire de demi-tour. Pour connaître la probabilité de transition vers un état $s'$ il faut connaitre l'état $s$ ainsi que les directions courantes des fantômes, qui sont données par la connaissance de l'état précédant $s$. \\
+
+\begin{figure}[h]
+	\includegraphics[scale=0.5]{img/non-determinism.png}
+	\caption{Non-déterminisme dans Pacman.}
+\end{figure}
+
+L'image ci-dessous représente une succession d'états. Nous voyons que pour passer de l'état 1 à l'état 2, seule l'action du joueur importe. En revanche, si le joueur continue d'aller à gauche à l'état 2, l'état suivant peut être soit A soit B. \\
+
+En reprenant le formalisme introduit précédemment, on a :
+
+\begin{eqnarray}
+T(s_1, left, s_2) = 1
+\end{eqnarray} 
+\begin{eqnarray}
+T(s_2, left, s_A) = 0.5
+\end{eqnarray} 
+\begin{eqnarray}
+T(s_2, left, s_B) = 0.5
+\end{eqnarray}
+\vspace{0.1cm}
+
+
+En réalité, $T$ devrait aussi avoir en paramètre l'état précédent. Pour simplifier les notations, $T$ conservera cette forme par la suite.
 
 %------------------------------------------------
 \pagebreak
@@ -161,7 +205,7 @@ LOUIS
 
 \subsection{Définitions}
 
-Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant l'action à effectuer maximisant la la récompense totale espérée $R$ décrite en partie précédente.\\
+Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant l'action à effectuer maximisant la récompense totale espérée $R$ décrite en partie précédente.\\
 
 On considèrera pour cela la value function qui renseigne l'espérance du résultat pour une politique et un état initial donnés :
 

@@ -1,0 +1,101 @@
+RefactoringTool: Skipping implicit fixer: buffer
+RefactoringTool: Skipping implicit fixer: idioms
+RefactoringTool: Skipping implicit fixer: set_literal
+RefactoringTool: Skipping implicit fixer: ws_comma
+RefactoringTool: Refactored .\analysis.py
+RefactoringTool: Refactored .\autograder.py
+RefactoringTool: No changes to .\crawler.py
+RefactoringTool: No changes to .\environment.py
+RefactoringTool: No changes to .\featureExtractors.py
+RefactoringTool: Refactored .\game.py
+RefactoringTool: No changes to .\ghostAgents.py
+RefactoringTool: Refactored .\grading.py
+RefactoringTool: Refactored .\graphicsCrawlerDisplay.py
+RefactoringTool: Refactored .\graphicsDisplay.py
+RefactoringTool: Refactored .\graphicsGridworldDisplay.py
+RefactoringTool: Refactored .\graphicsUtils.py
+RefactoringTool: Refactored .\gridworld.py
+RefactoringTool: No changes to .\keyboardAgents.py
+RefactoringTool: Refactored .\layout.py
+RefactoringTool: Refactored .\learningAgents.py
+RefactoringTool: No changes to .\mdp.py
+RefactoringTool: Refactored .\pacman.py
+RefactoringTool: No changes to .\pacmanAgents.py
+RefactoringTool: No changes to .\projectParams.py
+RefactoringTool: No changes to .\qlearningAgents.py
+RefactoringTool: Refactored .\reinforcementTestClasses.py
+RefactoringTool: Refactored .\testClasses.py
+RefactoringTool: Refactored .\testParser.py
+RefactoringTool: Refactored .\textDisplay.py
+RefactoringTool: Refactored .\textGridworldDisplay.py
+RefactoringTool: Refactored .\util.py
+RefactoringTool: No changes to .\valueIterationAgents.py
+RefactoringTool: Files that need to be modified:
+RefactoringTool: .\analysis.py
+RefactoringTool: .\autograder.py
+RefactoringTool: .\crawler.py
+RefactoringTool: .\environment.py
+RefactoringTool: .\featureExtractors.py
+RefactoringTool: .\game.py
+RefactoringTool: .\ghostAgents.py
+RefactoringTool: .\grading.py
+RefactoringTool: .\graphicsCrawlerDisplay.py
+RefactoringTool: .\graphicsDisplay.py
+RefactoringTool: .\graphicsGridworldDisplay.py
+RefactoringTool: .\graphicsUtils.py
+RefactoringTool: .\gridworld.py
+RefactoringTool: .\keyboardAgents.py
+RefactoringTool: .\layout.py
+RefactoringTool: .\learningAgents.py
+RefactoringTool: .\mdp.py
+RefactoringTool: .\pacman.py
+RefactoringTool: .\pacmanAgents.py
+RefactoringTool: .\projectParams.py
+RefactoringTool: .\qlearningAgents.py
+RefactoringTool: .\reinforcementTestClasses.py
+RefactoringTool: .\testClasses.py
+RefactoringTool: .\testParser.py
+RefactoringTool: .\textDisplay.py
+RefactoringTool: .\textGridworldDisplay.py
+RefactoringTool: .\util.py
+RefactoringTool: .\valueIterationAgents.py
+RefactoringTool: Warnings/messages while refactoring:
+RefactoringTool: ### In file .\crawler.py ###
+RefactoringTool: Line 166: could not convert: raise 'Crawling Robot: Arm Raised too high. Careful!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 168: could not convert: raise 'Crawling Robot: Arm Raised too low. Careful!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 189: could not convert: raise 'Crawling Robot: Hand Raised too high. Careful!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 191: could not convert: raise 'Crawling Robot: Hand Raised too low. Careful!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 268: could not convert: raise 'Flying Robot!!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 260: could not convert: raise 'Never Should See This!'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file .\graphicsCrawlerDisplay.py ###
+RefactoringTool: Line 178: could not convert: raise "Unknown RobotType"
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 223: could not convert: raise 'None action returned: Code Not Complete'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 229: could not convert: raise 'Only pendulum can animatePolicy'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file .\graphicsUtils.py ###
+RefactoringTool: Line 329: could not convert: raise  'incomprehensible coordinates'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file .\gridworld.py ###
+RefactoringTool: Line 208: could not convert: raise 'Total transition probability more than one; sample failure.'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 123: could not convert: raise "Illegal action!"
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 362: could not convert: raise 'Error: Agent returned None action'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 101: could not convert: raise 'Grid has no start state'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 212: could not convert: raise 'Total transition probability less than one; sample failure.'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file .\textGridworldDisplay.py ###
+RefactoringTool: Line 278: cannot convert map(None, ...) with multiple arguments because map() now truncates to the shortest sequence
+RefactoringTool: Line 278: cannot convert map(None, ...) with multiple arguments because map() now truncates to the shortest sequence
+RefactoringTool: Line 282: cannot convert map(None, ...) with multiple arguments because map() now truncates to the shortest sequence
+RefactoringTool: Line 282: cannot convert map(None, ...) with multiple arguments because map() now truncates to the shortest sequence
