@@ -82,6 +82,8 @@ stringstyle=\color[rgb]{0.627,0.126,0.941},
 	language=Python
 }
 
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1em}
 
 \usepackage{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Required for accented characters
@@ -315,7 +317,114 @@ De nombreuses questions propres au Deep Learning se posent alors, comme évoqué e
 
 \section{Modèles et résultats}
 
-FRANCOIS
+Nous allons dans cette partie nous intéresser aux modèles présentés et implémentés dans l'article \textit{Recurrent Deep Q-Learning for PAC-MAN} (Kushal Ranjan, Amelia Christensen, Bernardo Ramos, \textsc{Stanford}) ainsi qu'aux résultats obtenus. Le but de cette article est de développer un agent d'apprentissage renforcé pour PAC-MAN, avec une combinaison de réseaux convolutionnels et récurrents, ainsi que des unités LSTM, afin de modéliser la Q-value function $Q(s,a)$ introduite précédemment.
+
+\subsection{Architectures}
+
+Afin de répondre au problème posé, plusieurs architectures ont été proposées.
+
+\paragraph{Remarque préliminaire}
+
+L'utilisation de couches fully connected est permise car le problème est dans a situation suivante :
+\begin{itemize}
+\item les images d'entrée sont de taille fixe (540x540 réduit à 224x224) ;
+\item l'information spatiale est simplifiée par les différentes couches décrites ci-après.
+\end{itemize}
+
+
+\subsubsection{Inception-LSTM}
+
+La première architecture vise à tester l'effet du transfer learning sur la capacité d'apprentissage du réseau. Le transfer learning, discipline à part entière, consiste à utiliser une partie d'un réseau déjà entraîné pour extraire des features dans une autre architecture. L'architecture suit le déroulement suivant :
+\begin{enumerate}
+\item extraction de features à partir des images brutes, utilisation de Google Inception v3 (\texttt{fourth max-pool}, consistant à compresser l'image en regroupant plusieurs pixels en un seul portant la valeur maximale) ;
+\item alimentation d'un fully connected layer avec les features extraites ;
+\item ajout d'une couche LSTM (Long Short-Term Memory, les états cachés contiennent la mémoire des actions passées) ;
+\item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
+\end{enumerate}
+
+L'architecture est résumée par le schéma figure XXX.
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{inception-lstm.png}
+\caption{Architecture Inception-LSTM}
+\end{center}
+\end{figure}
+
+\pagebreak
+
+\subsubsection{Convolutional-LSTM}
+
+Ensuite, une architecture entraînée à partir de zéro est proposée. Elle suit le déroulement suivant :
+\begin{enumerate}
+\item trois couches de pooling (avec couche de correction) ;
+\item deux couches de réseaux fully connected FC1 et FC2 ;
+\item ajout d'une couche LSTM ;
+\item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
+\end{enumerate}
+
+L'architecture est résumée par le schéma figure XXX.
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{conv-lstm.png}
+\caption{Architecture Inception-LSTM}
+\end{center}
+\end{figure}
+
+\subsubsection{Convolutional sans mémoire}
+
+L'objectif de cette architecture est de fournir un benchmark similaire à l'architecture précédente, mais sans la couche LSTM dotée de mémoire. Elle suit le déroulement suivant :
+\begin{enumerate}
+\item trois couches de pooling (avec couche de correction) ;
+\item une couche de réseau fully connected FC1 ;
+\item une couche de réseau fully connected FC2 de sortie de taille 5, qui fournit directement les Q-values.
+\end{enumerate}
+
+\subsection{Implémentation, résultats et analyses}
+
+Ces méthodes sont implémentées à l'aide de TensorFlow, sur une version pré-existante de PAC-MAN en Python (cf. \textit{Berkeley's Introduction to Artificial Intelligence}).\\
+
+
+
+Les deux premières architectures (Conv-LSTM et Inception-LSTM) ont été appliquée sur 288 itérations sur la grille moyenne \texttt{mediumGrid}. Pour chaque itération les modèles ont été appliqué 6 fois et la moyenne de la perte a été calculée et est présentée en figure XXX. On constate une baisse et une stabilisation de la perte à partir d'une centaine de parties. Cependant, cette baisse ne constitue pas à elle seule une situation convenable. En effet, les actions résultant pour l'agent Pac-Man sont en majorité des cycles de répétitions droite-gauche ou haut-bas, sans aucune considération des fantômes ou de la nourriture.\\
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{perf1.png}
+\caption{Perte moyenne par partie pour Conv-LSTM et Inception-LSTM.}
+\end{center}
+\end{figure}
+
+ 
+La conclusion apportée est celle que l'entraînement sur quelques milliers d'itérations n'est pas suffisant pour aboutir à des paramètres corrects. Selon les estimations fournies, il faudrait 1000 heures pour entrainer un unique réseau convolutionnel sur un nombre suffisant d'itérations (325 000). Cela est aussi en partie limité par la nécessité de récupérer 'physiquement' les images pour le dataset.\\
+
+\pagebreak
+
+\paragraph{Apprentissage supervisé}
+
+Afin de contourner cette difficulté, une solution proposée est d'ajouter une partie d'apprentissage supervisé afin d'initialiser le modèle. Cette méthode permet de diviser le nombre de paramètres utilisé par environ 4 pour chacune des architectures présentées.\\
+
+Pour conduire cet apprentissage supervisé, la base du training set est composée des images RGB brutes, de deux dispositions différentes :
+\begin{itemize}
+\item une grille simple, de taille 5x6, avec 4 éléments de nourriture et un fantôme ;
+\item une grille plus large, avec beaucoup de nourriture et plusieurs fantômes.
+\end{itemize}
+
+Ces images ont été récupérées avec \texttt{ImageGrab}. Un dataset de 6500 images étiquetées a été créé en jouant à PAC-MAN manuellement. Elles sont ensuite ré-échantillonnées avec \texttt{opencv} pour passer d'une résolution de 540x540 à 224x224 afin de pouvoir utiliser Inception V3 pour extraire les features.\\
+
+
+En seulement huit heures, 11 000 itérations ont été réalisées, par batch de 100 (correspondant à 1 100 000 exemples échantillonnés depuis le dataset de 6 500 images). Cela aurait demandé environ 5 mois de calcul pour une implémentation directe en reinforcement learning avec l'architecture Conv-LSTM. On observe en figure XXX une amélioration correcte des scores au fur et à mesure de l'entrainement du réseau convolutionnel. Cela est de bonne augure pour une application éventuelle de l'architecture deep Q-learning Conv-LSTM. La validité d'un tel réseau convolutionnel pour une application de deep Q-learning est grandement envisageable grâce à la phase d'apprentissage supervisé, éliminant le besoin d'entraîner celui-ci sur un nombre d'états bien trop important.\\
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{perf2.png}
+\caption{Score moyen par apprentissage supervisé.}
+\end{center}
+\end{figure}
+
+
+Un test a été conduit en initialisant un modèle de deep Q-learning par apprentissage supervisé. Cependant, les performances n'ont pas bénéficié d'une grande amélioration, le score se stabilisant autour de -42 après une trentaine de parties. Les limites rencontrées sont majoritairement dues au manque de puissance de calcul et au besoin d'avoir un retour 'physique' de l'écran du jeu pour l'utiliser dans le modèle. Par ailleurs, aucune conclusion claire n'est tirée de la présence ou non de la couche LSTM finale.\\
 
 %------------------------------------------------
 
