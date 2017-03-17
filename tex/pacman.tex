@@ -146,7 +146,9 @@ Deep Q-Learning for PAC-MAN} % Subtitle
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Blabla
+Ce document fait le bilan de nos recherches au sujet du Deep-Q Learning et de ses possibilités d'application au jeu Pacman. Il fait notamment le point sur les tentatives décrites dans l'article \textit{Recurrent Deep Q-Learning for PAC-MAN} (Kushal Ranjan, Amelia Christensen, Bernardo Ramos, \textsc{Stanford}). \\
+
+Le détail de notre implémentation et de nos conclusions sera donné lors de notre présentation le Lundi 20/03.\\
 
 
 %------------------------------------------------
@@ -173,7 +175,7 @@ Avec ce formalisme, le but du jeu est de déterminer une politique de déplacement
 
 \subsection{Pacman comme MDP}
 
-Le fonctionnement du Pacman correspond bien à un processus de décision markovien. En effet les probabilités de transitions d'un état $s$ à un état $s'$ ne dépendent que de l'état $s$ et de l'état précédant $s$. L'ensemble des actions possibles est alors $A = \{up, down, left, right, stay\}$ et un état $s$ est défini par la position du Pacman, ainsi que par les positions des récompenses et des fantômes.\\
+Le fonctionnement du Pacman correspond bien à un processus de décision markovien. En effet les probabilités de transitions d'un état $s$ à un état $s'$ ne dépendent que de l'état $s$ et de l'état précédant $s$. L'ensemble des actions possibles est alors $A = \{up, down, left, right,$ $stay\}$ et un état $s$ est défini par la position du Pacman, ainsi que par les positions des récompenses et des fantômes.\\
 
 Le non-déterminisme n'opère qu'au niveau des déplacements des fantômes, avec comme seule contrainte qu'il ne peuvent pas faire de demi-tour. Pour connaître la probabilité de transition vers un état $s'$ il faut connaitre l'état $s$ ainsi que les directions courantes des fantômes, qui sont données par la connaissance de l'état précédant $s$. \\
 
@@ -285,7 +287,7 @@ Un algorithme de Reinforcement Learning classique est celui du Q-Learning. Dans 
 
 On construit ainsi notre matrice $Q_{table}$ par l'expérience, notre agent apprenant de ses récompenses avec $\alpha$ comme vitesse d'apprentissage. On notera que les valeurs de $\hat{Q}_{opt}(s,a)$ pour $s$ état final ne sont jamais mises à jour, elles devront être correctement initialisées. On pourra aussi introduire un facteur d'exploration $\epsilon$ qui décrit la probabilité de choisir une action au hasard plutôt que de la choisir selon les valeurs de $\hat{Q}_{opt}(s,a)$.\\
 
-En laissant l'agent parcourir les différents états possibles, cette méthode donne vite de très bons résultats. Cependant encore une fois, le Pacman présente un nombre d'états possibles très grand qui sont ainsi difficiles à parcourir entièrement. La méthode du Q-Learning simple n'est donc pas efficace sur ce jeu, mais des variantes sont envisageable, comme celle du Deep Q-Learning.
+En laissant l'agent parcourir les différents états possibles, cette méthode donne vite de très bons résultats. Cependant encore une fois, le Pacman présente un nombre d'états possibles très grand qui sont ainsi difficiles à parcourir entièrement. La méthode du Q-Learning simple n'est donc pas efficace sur ce jeu, mais des variantes sont envisageables, comme celle du Deep Q-Learning.
 
 \subsubsection{Deep Q-Learning}
 
@@ -306,18 +308,16 @@ Pour résumer, on initialise un réseau de neurones $Q_{network}$, puis on commenc
 
 On peut encore une fois introduire un facteur d'exploration $\epsilon$. Une autre astuce efficace est celle de l'expérience replay. L'idée est de stocker chaque nouvelle observation dans une \texttt{replay memory}, et d'entrainer à chaque étape le réseau non pas avec une unique nouvelle valeur mais avec un mini-batch tiré aléatoirement parmi la \texttt{replay memory}. Cette technique permet d'éviter de tomber dans certains minima locaux et elle permet surtout d'accélérer le début de l'entrainement du réseau en peuplant la \texttt{replay memory} par des données extérieures, comme des parties jouées par un humain ou une autre IA.\\
 
-Du point de vue de la modélisation du problème, plusieurs solutions sont envisageables pour structurer les données en un vecteur de features. L'idée ici est de travailler sur les images brutes, sans modéliser d'avantage, de manière à créer un modèle général, utilisable notamment pour les jeux Atari, non dépendant de spécificités du Pacman. Chaque état est alors simplement représenté par l'ensemble de ses pixels, ou alors dans certaines modélisations par l'ensemble des pixels des dernières images (pour traduire la notion de mouvement). Ce choix de modélisation nous incite à travailler en Deep Learning, réputé pour son efficacité avec les images.\\
+Du point de vue de la modélisation du problème, plusieurs solutions sont envisageables pour structurer les données en un vecteur de features. L'idée ici est de travailler sur les images brutes, sans modéliser d'avantage, de manière à créer un modèle général, utilisable notamment pour les jeux Atari, non dépendant de spécificités du Pacman. Chaque état est alors simplement représenté par l'ensemble de ses pixels, ou alors dans certaines modélisations par l'ensemble des pixels des dernières images (pour conserver les informations de mouvement). Ce choix de modélisation nous incite à travailler en Deep Learning, réputé pour son efficacité avec les images.\\
 
 De nombreuses questions propres au Deep Learning se posent alors, comme évoqué en partie III.\\
-
-\subsection{Supervised Learning}
 
 %------------------------------------------------
 \pagebreak
 
 \section{Modèles et résultats}
 
-Nous allons dans cette partie nous intéresser aux modèles présentés et implémentés dans l'article \textit{Recurrent Deep Q-Learning for PAC-MAN} (Kushal Ranjan, Amelia Christensen, Bernardo Ramos, \textsc{Stanford}) ainsi qu'aux résultats obtenus. Le but de cette article est de développer un agent d'apprentissage renforcé pour PAC-MAN, avec une combinaison de réseaux convolutionnels et récurrents, ainsi que des unités LSTM, afin de modéliser la Q-value function $Q(s,a)$ introduite précédemment.
+Nous allons dans cette partie nous intéresser aux modèles présentés et implémentés dans l'article \textit{Recurrent Deep Q-Learning for PAC-MAN} (Kushal Ranjan, Amelia Christensen, Bernardo Ramos, \textsc{Stanford}) ainsi qu'aux résultats obtenus. Le but de cet article est de développer un agent d'apprentissage renforcé pour PAC-MAN, avec une combinaison de réseaux convolutionnels et récurrents, ainsi que des unités LSTM, afin de modéliser la Q-value function $Q(s,a)$ introduite précédemment.
 
 \subsection{Architectures}
 
