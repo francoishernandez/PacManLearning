@@ -192,7 +192,11 @@ T(s_2, left, s_A) = 0.5
 \end{eqnarray} 
 \begin{eqnarray}
 T(s_2, left, s_B) = 0.5
-\end{eqnarray} 
+\end{eqnarray}
+\vspace{0.1cm}
+
+
+En réalité, $T$ devrait aussi avoir en paramètre l'état précédent. Pour simplifier les notations, $T$ conservera cette forme par la suite.
 
 %------------------------------------------------
 \pagebreak
@@ -201,7 +205,7 @@ T(s_2, left, s_B) = 0.5
 
 \subsection{Définitions}
 
-Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant l'action à effectuer maximisant la la récompense totale espérée $R$ décrite en partie précédente.\\
+Le but du problème est donc de déterminer une politique $\pi : S \rightarrow A$ permettant de choisir à chaque instant l'action à effectuer maximisant la récompense totale espérée $R$ décrite en partie précédente.\\
 
 On considèrera pour cela la value function qui renseigne l'espérance du résultat pour une politique et un état initial donnés :
 
