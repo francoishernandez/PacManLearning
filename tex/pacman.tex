@@ -171,9 +171,29 @@ Avec ce formalisme, le but du jeu est de déterminer une politique de déplacement
 
 \subsection{Pacman comme MDP}
 
-Le fonctionnement du Pacman correspond bien à un processus de décision markovien. En effet les probabilités de transitions d'un état $s$ à un état $s'$ ne dépendent que de l'état $s$ et de l'état précédant $s$. \\
+Le fonctionnement du Pacman correspond bien à un processus de décision markovien. En effet les probabilités de transitions d'un état $s$ à un état $s'$ ne dépendent que de l'état $s$ et de l'état précédant $s$. L'ensemble des actions possibles est alors $A = \{up, down, left, right, stay\}$ et un état $s$ est défini par la position du Pacman, ainsi que par les positions des récompenses et des fantômes.\\
 
-Le non-déterminisme n'opère qu'au niveau des déplacements des fantômes, avec comme seule contrainte qu'il ne peuvent pas faire de demi-tour. Pour connaître la probabilité de transition vers un état $s'$ il faut connaitre l'état $s$ ainsi que les directions courantes des fantômes, qui sont données par la connaissance de l'état précédant $s$.
+Le non-déterminisme n'opère qu'au niveau des déplacements des fantômes, avec comme seule contrainte qu'il ne peuvent pas faire de demi-tour. Pour connaître la probabilité de transition vers un état $s'$ il faut connaitre l'état $s$ ainsi que les directions courantes des fantômes, qui sont données par la connaissance de l'état précédant $s$. \\
+
+\begin{figure}[h]
+	\includegraphics[scale=0.5]{img/non-determinism.png}
+	\caption{Non-déterminisme dans Pacman.}
+\end{figure}
+
+L'image ci-dessous représente une succession d'états. Nous voyons que pour passer de l'état 1 à l'état 2, seule l'action du joueur importe. En revanche, si le joueur continue d'aller à gauche à l'état 2, l'état suivant peut être soit A soit B. \\
+
+En reprenant le formalisme introduit précédemment, on a :
+
+\begin{eqnarray}
+T(s_1, left, s_2) = 1
+\end{eqnarray} 
+\begin{eqnarray}
+T(s_2, left, s_A) = 0.5
+\end{eqnarray} 
+\begin{eqnarray}
+T(s_2, left, s_B) = 0.5
+\end{eqnarray} 
+
 %------------------------------------------------
 \pagebreak
 
