@@ -14,6 +14,7 @@
 
 from game import Agent
 from game import Directions
+from graphicsDisplay import saveData
 import random
 
 class KeyboardAgent(Agent):
@@ -54,6 +55,7 @@ class KeyboardAgent(Agent):
             move = random.choice(legal)
 
         self.lastMove = move
+        saveData(move, self.getExpectedReward(state, move))
         return move
 
     def getMove(self, legal):
@@ -63,6 +65,10 @@ class KeyboardAgent(Agent):
         if   (self.NORTH_KEY in self.keys or 'Up' in self.keys) and Directions.NORTH in legal:   move = Directions.NORTH
         if   (self.SOUTH_KEY in self.keys or 'Down' in self.keys) and Directions.SOUTH in legal: move = Directions.SOUTH
         return move
+
+    def getExpectedReward(self, gameState, action):
+        nextGameState = gameState.generateSuccessor(0, action)
+        return nextGameState.getScore() - gameState.getScore()
 
 class KeyboardAgent2(KeyboardAgent):
     """

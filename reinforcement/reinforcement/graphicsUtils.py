@@ -69,6 +69,7 @@ def begin_graphics(width=640, height=480, color=formatColor(0, 0, 0), title=None
 
     # Create the root window
     _root_window = Tkinter.Tk()
+    _root_window.geometry('%dx%d+%d+%d' % (width, height, 0, 0))
     _root_window.protocol('WM_DELETE_WINDOW', _destroy_window)
     _root_window.title(title or 'Graphics Window')
     _root_window.resizable(0, 0)
@@ -368,7 +369,7 @@ def move_by(object, x, y=None,
 
 def writePostscript(filename):
     "Writes the current canvas to a postscript file."
-    psfile = file(filename, 'w')
+    psfile = open(filename, 'w')
     psfile.write(_canvas.postscript(pageanchor='sw',
                      y='0.c',
                      x='0.c'))

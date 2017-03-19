@@ -15,6 +15,7 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+from graphicsDisplay import saveData
 
 from game import Agent
 
@@ -276,7 +277,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         agent = 0
         depth = 0
         bestAction, bestValue = self.expectimaxSearch(gameState, depth, agent)
+        saveData(bestAction, self.getExpectedReward(gameState, bestAction))
         return bestAction
+
+    def getExpectedReward(self, gameState, action):
+        nextGameState = gameState.generateSuccessor(0, action)
+        return nextGameState.getScore() - gameState.getScore()
+
 
 def betterEvaluationFunction(currentGameState):
     """

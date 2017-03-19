@@ -15,6 +15,10 @@
 from graphicsUtils import *
 import math, time
 from game import Directions
+from PIL import ImageGrab, Image
+import pickle
+import gzip
+import numpy as np
 
 ###########################
 #  GRAPHICS DISPLAY CODE  #
@@ -666,6 +670,8 @@ def add(x, y):
 
 SAVE_POSTSCRIPT = False
 POSTSCRIPT_OUTPUT_DIR = 'frames'
+IMAGE_OUTPUT_DIR = 'img'
+DATA_OUTPUT_DIR = 'data'
 FRAME_NUMBER = 0
 import os
 
@@ -677,3 +683,24 @@ def saveFrame():
     name = os.path.join(POSTSCRIPT_OUTPUT_DIR, 'frame_%08d.ps' % FRAME_NUMBER)
     FRAME_NUMBER += 1
     writePostscript(name) # writes the current canvas
+
+
+def saveData(action, reward):
+    global FRAME_NUMBER, IMAGE_OUTPUT_DIR, DATA_OUTPUT_DIR
+    if not os.path.exists(IMAGE_OUTPUT_DIR): os.mkdir(IMAGE_OUTPUT_DIR)
+    if not os.path.exists(DATA_OUTPUT_DIR): os.mkdir(DATA_OUTPUT_DIR)
+    name = os.path.join(IMAGE_OUTPUT_DIR, 'image_%08d.jpg' % FRAME_NUMBER)
+    FRAME_NUMBER += 1
+    box = (43, 72, 766, 458)
+    img = ImageGrab.grab(box)
+    resized_img = np.asarray(img.resize((int(img.size[0]/3), int(img.size[1]/3))))
+    grayscale_img = rgb2gray(resized_img)
+    Image.fromarray(grayscale_img, "L").save(name, "JPEG")
+    name = os.path.join(DATA_OUTPUT_DIR, 'move_%08d.gz' % FRAME_NUMBER)
+    file = gzip.open(name, 'w')
+    pickle.dump((grayscale_img, action, reward), file)
+    print((grayscale_img, action, reward))
+
+
+def rgb2gray(rgb):
+    return np.dot(rgb[..., :3], [0.299, 0.587, 0.114]).astype(dtype=np.int8)
