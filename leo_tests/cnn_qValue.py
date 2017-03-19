@@ -11,18 +11,22 @@ from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_f
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
+# On récupère la replay memory initiale de la forme (s,a,r,s') et l'ensemble des
+# états s seuls (fichiers créés au préalable par data_preprocessing.py) 
 import gzip
 import pickle
-file = gzip.open("training_data_nextstate.gz", 'rb')
+file = gzip.open("train_s_a_r_sBis.gz", 'rb')
 replayMemory = pickle.load(file)
 
-stateFeatures = np.array
-for elem in replayMemory :
-    s, _, _, _ = elem
-    stateFeatures = np.append(stateFeatures, s)
+file = gzip.open("train_states.gz", 'rb')
+statesLoad = pickle.load(file)
+trainStates = np.asarray(statesLoad)
 
+# Facteur de dévaluation
 gamma = 0.5
 
+# Cette fonction recalcule les Q-values cibles sur la replay memory
+# A appeler après chaque nouvelle expérimentation lors du reinforcement
 def recalculate_target(memory) :
     targets = []
     for i in range(len(memory)) :
@@ -35,15 +39,15 @@ def recalculate_target(memory) :
     
     return targets
 
-
+# Modèle de notre réseau de neurones
 def cnn_model_fn(features, labels, mode):
-	# Modèle de CNN
+
 	# Input Layer
 	input_layer = tf.reshape(features, [-1, 84, 84, 1])
 
-    # Modèle simplifié avec un CNN
+    # Modèle simplifié avec un seul CNN
 
-	# Conv Layer #1
+	# Conv Layer
 	conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
@@ -64,7 +68,7 @@ def cnn_model_fn(features, labels, mode):
 	loss = None
 	train_op = None
 
-	# Calculate Loss (for both TRAIN and EVAL modes)
+	# Loss (régression sur les Q-values donc mean squared)
 	if mode != learn.ModeKeys.INFER:
         	loss = tf.reduce_mean(tf.squared_difference(
                     tf.cast(logits, tf.int32), 
@@ -75,16 +79,16 @@ def cnn_model_fn(features, labels, mode):
         	train_op = tf.contrib.layers.optimize_loss(
         		loss=loss,
         		global_step=tf.contrib.framework.get_global_step(),
-        		learning_rate=0.001,
+        		learning_rate=0.01,
         		optimizer="SGD")
 
 	# Generate Predictions
 	predictions = {
-		"classes": tf.argmax(
+		"action": tf.argmax(
 			input=logits, axis=1),
 		"probabilities": tf.nn.softmax(
 			logits, name="softmax_tensor"),
-        "MaxQvalue" : tf.reduce_max(
+         "MaxQvalue" : tf.reduce_max(
 			input=logits)
 	}
 
@@ -93,16 +97,32 @@ def cnn_model_fn(features, labels, mode):
 		mode=mode, predictions=predictions, loss=loss, train_op=train_op)
 
 
-# Create the Estimator
+
+
+# Création de l'estimateur
 Qvalue_regressor = learn.Estimator(
 	model_fn=cnn_model_fn, model_dir="/tmp/convnet_model")
 
-# Set up logging for predictions
+# affichage log des prédictions
 tensors_to_log = {"probabilities": "softmax_tensor"}
 logging_hook = tf.train.LoggingTensorHook(
 	tensors=tensors_to_log, every_n_iter=50)
 
-for i in range(100) :
+
+# DEEP Q LEARNING
+
+# Nombre d'itérations
+imax = 1000
+# Taille du sample du replayMemory
+replayMemorySample = 100
+
+
+for i in range(imax) :
+    
+    # Pour le reinforcement learning, ici devrait se situer le choix du coup à l'aide de :
+    # action = cnn_model_fn(currentState, None, learn.ModeKeys.INFER)["action"]
+    # On effectue ensuite l'action, on observe la récompense, et on peux ainsi
+    # l'ajouter à la replay memory.
     
     targetQvalues = recalculate_target(replayMemory)
 
@@ -110,9 +130,12 @@ for i in range(100) :
     Qvalue_regressor.fit(
         x=stateFeatures,
         y=targetQvalues,
-        batch_size=100,
+        batch_size=replayMemorySample,
         steps=1,
         monitors=[logging_hook])
+
+
+
 
 
 
