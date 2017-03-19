@@ -31,29 +31,46 @@ gamma = 0.5
 # Cette fonction recalcule les Q-values cibles sur la replay memory
 # A appeler après chaque nouvelle expérimentation lors du reinforcement
 def recalculate_target(memory) :
-    targets = []
+    targets = np.array
+    print("dans recalculate_target")
     for i in range(len(memory)) :
         s, a, r, sPrime = memory[i]
+        print("get s a r sprime")
+        print(i)
+        # Qvalues
+        toAdd = np.array([0,0,0,0,0])
+        
+        pred = cnn_model_fn(sPrime, None, learn.ModeKeys.INFER).predictions
+        MaxQvalue = pred["MaxQvalue"]
+        Qvalues = pred["actions"]
+        
+        for i 
+    
+    
         if (sPrime == "Final") :
+            print("sprime==final")
             targets.append(r)
         else :
-            MaxQvalue = (cnn_model_fn(sPrime, None, learn.ModeKeys.INFER).predictions)["MaxQvalue"]
+            print("sprime!=final")
+            MaxQvalue = pred["MaxQvalue"]
+            print("test : "+str(MaxQvalue))
             targets.append(r + gamma * MaxQvalue)
+            
     
     return targets
 
 # Modèle de notre réseau de neurones
 def cnn_model_fn(features, labels, mode):
 
-	features = features.astype(dtype=np.float32)
+	#features = features.astype(dtype=np.float32)
 
 	# Input Layer
-	input_layer = tf.reshape(features, [-1, 128, 241, 1])
-
+    input_layer = tf.reshape(features, [-1, 128, 241, 1])
+    input_layer = tf.to_float(input_layer)
     # Modèle simplifié avec un seul CNN
 
 	# Conv Layer
-	conv1 = tf.layers.conv2d(
+    conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
         strides=5,
@@ -62,25 +79,25 @@ def cnn_model_fn(features, labels, mode):
 		activation=tf.nn.relu)
 
 	# Dense Layer
-	conv1_flat = tf.reshape(conv1, [-1, 26 * 49 * 32])
-	dense = tf.layers.dense(inputs=conv1_flat, units=1024, activation=tf.nn.relu)
-	dropout = tf.layers.dropout(
+    conv1_flat = tf.reshape(conv1, [-1, 26 * 49 * 32])
+    dense = tf.layers.dense(inputs=conv1_flat, units=1024, activation=tf.nn.relu)
+    dropout = tf.layers.dropout(
 		inputs=dense, rate=0.4, training=mode == learn.ModeKeys.TRAIN)
 
 	# Logits Layer
-	logits = tf.layers.dense(inputs=dropout, units=5)
+    logits = tf.layers.dense(inputs=dropout, units=5)
 
-	loss = None
-	train_op = None
+    loss = None
+    train_op = None
 
 	# Loss (régression sur les Q-values donc mean squared)
-	if mode != learn.ModeKeys.INFER:
+    if mode != learn.ModeKeys.INFER:
         	loss = tf.reduce_mean(tf.squared_difference(
-                    tf.cast(logits, tf.int32), 
-                    tf.cast(labels, tf.int32)))
+                    tf.cast(logits, tf.float32), 
+                    tf.cast(labels, tf.float32)))
 
 	# Configure the Training Op (for TRAIN mode)
-	if mode == learn.ModeKeys.TRAIN:
+    if mode == learn.ModeKeys.TRAIN:
         	train_op = tf.contrib.layers.optimize_loss(
         		loss=loss,
         		global_step=tf.contrib.framework.get_global_step(),
@@ -88,7 +105,7 @@ def cnn_model_fn(features, labels, mode):
         		optimizer="SGD")
 
 	# Generate Predictions
-	predictions = {
+    predictions = {
 		"action": tf.argmax(
 			input=logits, axis=1),
 		"probabilities": tf.nn.softmax(
@@ -98,7 +115,7 @@ def cnn_model_fn(features, labels, mode):
 	}
 
 	# Return a ModelFnOps object
-	return model_fn_lib.ModelFnOps(
+    return model_fn_lib.ModelFnOps(
 		mode=mode, predictions=predictions, loss=loss, train_op=train_op)
 
 
@@ -108,10 +125,14 @@ def cnn_model_fn(features, labels, mode):
 Qvalue_regressor = learn.Estimator(
 	model_fn=cnn_model_fn, model_dir="/tmp/convnet_model")
 
+print("Coucou")
+
 # affichage log des prédictions
 tensors_to_log = {"probabilities": "softmax_tensor"}
 logging_hook = tf.train.LoggingTensorHook(
 	tensors=tensors_to_log, every_n_iter=1)
+
+print("Coucou")
 
 
 # DEEP Q LEARNING
@@ -122,18 +143,32 @@ imax = 1000
 replayMemorySample = 10
 
 
-for i in range(imax) :
+ytest = np.random.rand(5,7194)*10
+
+# Pre-Train the model
+Qvalue_regressor.fit(
+        x=trainStates,
+        y=ytest,
+        batch_size=replayMemorySample,
+        steps=1,
+        monitors=[logging_hook])
+
+for i in range(imax):
     
     # Pour le reinforcement learning, ici devrait se situer le choix du coup à l'aide de :
     # action = cnn_model_fn(currentState, None, learn.ModeKeys.INFER)["action"]
     # On effectue ensuite l'action, on observe la récompense, et on peux ainsi
     # l'ajouter à la replay memory.
     
+    print("Coucou")
+    
     targetQvalues = recalculate_target(replayMemory)
+
+    print("Coucou")
 
     # Train the model
     Qvalue_regressor.fit(
-        x=stateFeatures,
+        x=trainStates,
         y=targetQvalues,
         batch_size=replayMemorySample,
         steps=1,
