@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -32,18 +35,20 @@ def recalculate_target(memory) :
     for i in range(len(memory)) :
         s, a, r, sPrime = memory[i]
         if (sPrime == "Final") :
-            targets[i] = r
+            targets.append(r)
         else :
-            MaxQvalue = cnn_model_fn(sPrime, None, learn.ModeKeys.INFER)["MaxQvalue"]
-            targets[i] = r + gamma * MaxQvalue
+            MaxQvalue = (cnn_model_fn(sPrime, None, learn.ModeKeys.INFER).predictions)["MaxQvalue"]
+            targets.append(r + gamma * MaxQvalue)
     
     return targets
 
 # Modèle de notre réseau de neurones
 def cnn_model_fn(features, labels, mode):
 
+	features = features.astype(dtype=np.float32)
+
 	# Input Layer
-	input_layer = tf.reshape(features, [-1, 84, 84, 1])
+	input_layer = tf.reshape(features, [-1, 128, 241, 1])
 
     # Modèle simplifié avec un seul CNN
 
@@ -51,13 +56,13 @@ def cnn_model_fn(features, labels, mode):
 	conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
-         strides=5,
+        strides=5,
 		kernel_size=[10, 10],
 		padding="same",
 		activation=tf.nn.relu)
 
 	# Dense Layer
-	conv1_flat = tf.reshape(conv1, [-1, 15 * 15 * 64])
+	conv1_flat = tf.reshape(conv1, [-1, 26 * 49 * 32])
 	dense = tf.layers.dense(inputs=conv1_flat, units=1024, activation=tf.nn.relu)
 	dropout = tf.layers.dropout(
 		inputs=dense, rate=0.4, training=mode == learn.ModeKeys.TRAIN)
@@ -89,7 +94,7 @@ def cnn_model_fn(features, labels, mode):
 		"probabilities": tf.nn.softmax(
 			logits, name="softmax_tensor"),
          "MaxQvalue" : tf.reduce_max(
-			input=logits)
+			input_tensor=logits)
 	}
 
 	# Return a ModelFnOps object
@@ -106,7 +111,7 @@ Qvalue_regressor = learn.Estimator(
 # affichage log des prédictions
 tensors_to_log = {"probabilities": "softmax_tensor"}
 logging_hook = tf.train.LoggingTensorHook(
-	tensors=tensors_to_log, every_n_iter=50)
+	tensors=tensors_to_log, every_n_iter=1)
 
 
 # DEEP Q LEARNING
@@ -114,7 +119,7 @@ logging_hook = tf.train.LoggingTensorHook(
 # Nombre d'itérations
 imax = 1000
 # Taille du sample du replayMemory
-replayMemorySample = 100
+replayMemorySample = 10
 
 
 for i in range(imax) :
