@@ -10,18 +10,22 @@ liste = pickle.load(file)
 
 s_a_r_sBis = []
 states = []
+actions = []
 
 for i in range(len(liste)) :
     s, a, r = liste[i]
     sCropped = s[0:121,0:195]
     states.append(sCropped)
     
+    dictActions = {'Stop':0,'North':1,'South':2,'East':3,'West':4}
+    actions.append(dictActions[a])
+    
     if ( (r > 400) | (r < -400) | (i>=(len(liste)-1)) ) :
-        s_a_r_sBis.append((s,a,r,"Final"))
+        s_a_r_sBis.append((s,dictActions[a],r,"Final"))
     else :
         sPrime, _ , _ = liste[i+1]
         sPrimeCropped = sPrime[0:121,0:195]
-        s_a_r_sBis.append((s,a,r,sPrimeCropped))
+        s_a_r_sBis.append((s,dictActions[a],r,sPrimeCropped))
 
 
 
@@ -33,3 +37,6 @@ file3 = gzip.open("train_states.gz", 'w')
 pickle.dump(states,file3)
 file3.close()
 
+file4 = gzip.open("train_actions.gz", 'w')
+pickle.dump(actions,file4)
+file4.close()
