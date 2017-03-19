@@ -13,13 +13,15 @@ states = []
 
 for i in range(len(liste)) :
     s, a, r = liste[i]
-    states.append(s)
+    sCropped = s[0:121,0:195]
+    states.append(sCropped)
     
     if ( (r > 400) | (r < -400) | (i>=(len(liste)-1)) ) :
         s_a_r_sBis.append((s,a,r,"Final"))
     else :
         sPrime, _ , _ = liste[i+1]
-        s_a_r_sBis.append((s,a,r,sPrime))
+        sPrimeCropped = sPrime[0:121,0:195]
+        s_a_r_sBis.append((s,a,r,sPrimeCropped))
 
 
 
