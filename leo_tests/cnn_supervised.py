@@ -21,27 +21,27 @@ file = gzip.open("train_states.gz", 'rb')
 statesLoad = pickle.load(file)
 trainStates = np.asarray(statesLoad)
 
-
+batch_size = 10
 
 def cnn_model_fn(features, labels, mode):
 	#features = features.astype(dtype=np.float32)
 
 	# Input Layer
-    input_layer = tf.reshape(features, [-1, 121, 195, 1])
+    input_layer = tf.reshape(features, [batch_size, 121, 195, 1])
     input_layer = tf.to_float(input_layer)
     # Modèle simplifié avec un seul CNN
 
 	# Conv Layer
     conv1 = tf.layers.conv2d(
 		inputs=input_layer,
-		filters=32,
-         strides=(5,5),
+		filters=16,
+         strides=(10,10),
 		kernel_size=[10, 10],
 		padding="same",
 		activation=tf.nn.relu)
 
 	# Dense Layer
-    conv1_flat = tf.reshape(conv1, [-1, 22 * 37 * 32])
+    conv1_flat = tf.reshape(conv1, [batch_size, 4160])
     dense = tf.layers.dense(inputs=conv1_flat, units=1024, activation=tf.nn.relu)
     dropout = tf.layers.dropout(
 		inputs=dense, rate=0.4, training=mode == learn.ModeKeys.TRAIN)
@@ -96,7 +96,7 @@ logging_hook = tf.train.LoggingTensorHook(
 pacman_classifier.fit(
 	x=trainStates,
 	y=trainActions,
-	batch_size=100,
+	batch_size=batch_size,
 	steps=20000,
 	monitors=[logging_hook])
 
