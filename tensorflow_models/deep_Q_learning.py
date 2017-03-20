@@ -37,12 +37,14 @@ def recalculate_target(memory) :
         s, a, r, sPrime = memory[i]
         print("get s a r sprime")
         print(i)
-        # Qvalues
+        # initialisation Qvalues pour s à ajouter à targets
         toAdd = np.array([0,0,0,0,0])
         
+        # on récupère les Qvalues annoncées actuellement par le réseau
         pred = cnn_model_fn(s, None, learn.ModeKeys.INFER).predictions
-        Qvalues = pred["action"]
+        Qvalues = pred["qvalues"]
         
+        # On met à jour les Qvalues cibles pour les 5 actions possibles
         for i in range(5) :
             # Pour l'action observée on met à jour la Qvalue par reinforcement
             if (a==i) :
@@ -76,7 +78,7 @@ def cnn_model_fn(features, labels, mode):
     conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
-        strides=5,
+        strides=(5,5),
 		kernel_size=[10, 10],
 		padding="same",
 		activation=tf.nn.relu)
@@ -113,7 +115,8 @@ def cnn_model_fn(features, labels, mode):
 			input=logits, axis=1),
 		"probabilities": tf.nn.softmax(
 			logits, name="softmax_tensor"),
-         "MaxQvalue" : tf.reduce_max(
+        # "qvalues": ???,
+        "MaxQvalue" : tf.reduce_max(
 			input_tensor=logits)
 	}
 
@@ -137,8 +140,10 @@ logging_hook = tf.train.LoggingTensorHook(
 
 print("Coucou")
 
+###################
+# DEEP Q LEARNING #
+###################
 
-# DEEP Q LEARNING
 
 # Nombre d'itérations
 imax = 1000
