@@ -8,6 +8,9 @@
 
 \documentclass[a4paper, 11pt]{article} % Font size (can be 10pt, 11pt or 12pt) and paper size (remove a4paper for US letter paper)
 
+\usepackage[T1,hyphens]{url}
+\usepackage{hyperref}
+
 \usepackage{standalone}
 \usepackage{amsmath}
 
@@ -342,7 +345,7 @@ La première architecture vise à tester l'effet du transfer learning sur la capac
 \item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
 \end{enumerate}
 
-L'architecture est résumée par le schéma figure XXX.
+L'architecture est résumée par le schéma figure 2.
 
 \begin{figure}[!h]
 \begin{center}
@@ -363,7 +366,7 @@ Ensuite, une architecture entraînée à partir de zéro est proposée. Elle suit le 
 \item récupération des Q-values pour les cinq actions via une couche FC-5 (fully connected, couche de sortie de taille 5).
 \end{enumerate}
 
-L'architecture est résumée par le schéma figure XXX.
+L'architecture est résumée par le schéma figure 3.
 
 \begin{figure}[!h]
 \begin{center}
@@ -374,7 +377,7 @@ L'architecture est résumée par le schéma figure XXX.
 
 \subsubsection{Convolutional sans mémoire}
 
-L'objectif de cette architecture est de fournir un benchmark similaire à l'architecture précédente, mais sans la couche LSTM dotée de mémoire. Elle suit le déroulement suivant :
+L'objectif de cette architecture est de fournir un benchmark similaire à l'architecture précédente, mais sans la couche LSTM dotée de mémoire. Elle suit le déroulement suivant~:
 \begin{enumerate}
 \item trois couches de pooling (avec couche de correction) ;
 \item une couche de réseau fully connected FC1 ;
@@ -387,7 +390,7 @@ Ces méthodes sont implémentées à l'aide de TensorFlow, sur une version pré-exist
 
 
 
-Les deux premières architectures (Conv-LSTM et Inception-LSTM) ont été appliquée sur 288 itérations sur la grille moyenne \texttt{mediumGrid}. Pour chaque itération les modèles ont été appliqué 6 fois et la moyenne de la perte a été calculée et est présentée en figure XXX. On constate une baisse et une stabilisation de la perte à partir d'une centaine de parties. Cependant, cette baisse ne constitue pas à elle seule une situation convenable. En effet, les actions résultant pour l'agent Pac-Man sont en majorité des cycles de répétitions droite-gauche ou haut-bas, sans aucune considération des fantômes ou de la nourriture.\\
+Les deux premières architectures (Conv-LSTM et Inception-LSTM) ont été appliquée sur 288 itérations sur la grille moyenne \texttt{mediumGrid}. Pour chaque itération les modèles ont été appliqué 6 fois et la moyenne de la perte a été calculée et est présentée en figure 4. On constate une baisse et une stabilisation de la perte à partir d'une centaine de parties. Cependant, cette baisse ne constitue pas à elle seule une situation convenable. En effet, les actions résultant pour l'agent Pac-Man sont en majorité des cycles de répétitions droite-gauche ou haut-bas, sans aucune considération des fantômes ou de la nourriture.\\
 
 \begin{figure}[!h]
 \begin{center}
@@ -414,7 +417,7 @@ Pour conduire cet apprentissage supervisé, la base du training set est composée 
 Ces images ont été récupérées avec \texttt{ImageGrab}. Un dataset de 6500 images étiquetées a été créé en jouant à PAC-MAN manuellement. Elles sont ensuite ré-échantillonnées avec \texttt{opencv} pour passer d'une résolution de 540x540 à 224x224 afin de pouvoir utiliser Inception V3 pour extraire les features.\\
 
 
-En seulement huit heures, 11 000 itérations ont été réalisées, par batch de 100 (correspondant à 1 100 000 exemples échantillonnés depuis le dataset de 6 500 images). Cela aurait demandé environ 5 mois de calcul pour une implémentation directe en reinforcement learning avec l'architecture Conv-LSTM. On observe en figure XXX une amélioration correcte des scores au fur et à mesure de l'entrainement du réseau convolutionnel. Cela est de bonne augure pour une application éventuelle de l'architecture deep Q-learning Conv-LSTM. La validité d'un tel réseau convolutionnel pour une application de deep Q-learning est grandement envisageable grâce à la phase d'apprentissage supervisé, éliminant le besoin d'entraîner celui-ci sur un nombre d'états bien trop important.\\
+En seulement huit heures, 11 000 itérations ont été réalisées, par batch de 100 (correspondant à 1 100 000 exemples échantillonnés depuis le dataset de 6 500 images). Cela aurait demandé environ 5 mois de calcul pour une implémentation directe en reinforcement learning avec l'architecture Conv-LSTM. On observe en figure 5 une amélioration correcte des scores au fur et à mesure de l'entrainement du réseau convolutionnel. Cela est de bonne augure pour une application éventuelle de l'architecture deep Q-learning Conv-LSTM. La validité d'un tel réseau convolutionnel pour une application de deep Q-learning est grandement envisageable grâce à la phase d'apprentissage supervisé, éliminant le besoin d'entraîner celui-ci sur un nombre d'états bien trop important.\\
 
 \begin{figure}[!h]
 \begin{center}
@@ -427,6 +430,19 @@ En seulement huit heures, 11 000 itérations ont été réalisées, par batch de 100 
 Un test a été conduit en initialisant un modèle de deep Q-learning par apprentissage supervisé. Cependant, les performances n'ont pas bénéficié d'une grande amélioration, le score se stabilisant autour de -42 après une trentaine de parties. Les limites rencontrées sont majoritairement dues au manque de puissance de calcul et au besoin d'avoir un retour 'physique' de l'écran du jeu pour l'utiliser dans le modèle. Par ailleurs, aucune conclusion claire n'est tirée de la présence ou non de la couche LSTM finale.\\
 
 %------------------------------------------------
+
+\pagebreak
+\section*{Bibliographie}
+\addcontentsline{toc}{section}{Bibliographie}
+
+\begin{itemize}
+\item \textit{Recurrent Deep Q-Learning for PAC-MAN}, Kushal Ranjan, Amelia Christensen \& Bernardo Ramos (Stanford)
+\item \url{https://www.nervanasys.com/demystifying-deep-reinforcement-learning/}
+\item \textit{Playing Atari with Deep Reinforcement Learning}, Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Alex Graves, Ioannis Antonoglou, Daan Wierstra \& Martin Riedmiller (Deepmind Technologies)
+\item \url{http://www.danielslater.net/2016/03/deep-q-learning-pong-with-tensorflow.html}
+\item \url{https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721#.yrxrjyora}
+\item CS188, \textit{Introduction to Artificial Intelligence}, Berkeley
+\end{itemize}
 
 %\pagebreak
 %\section*{Conclusion}
