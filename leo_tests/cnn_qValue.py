@@ -40,22 +40,25 @@ def recalculate_target(memory) :
         # Qvalues
         toAdd = np.array([0,0,0,0,0])
         
-        pred = cnn_model_fn(sPrime, None, learn.ModeKeys.INFER).predictions
-        MaxQvalue = pred["MaxQvalue"]
-        Qvalues = pred["actions"]
+        pred = cnn_model_fn(s, None, learn.ModeKeys.INFER).predictions
+        Qvalues = pred["action"]
         
-        for i 
-    
-    
-        if (sPrime == "Final") :
-            print("sprime==final")
-            targets.append(r)
-        else :
-            print("sprime!=final")
-            MaxQvalue = pred["MaxQvalue"]
-            print("test : "+str(MaxQvalue))
-            targets.append(r + gamma * MaxQvalue)
-            
+        for i in range(5) :
+            # Pour l'action observée on met à jour la Qvalue par reinforcement
+            if (a==i) :
+                if (sPrime == "Final") :
+                    print("sprime==final")
+                    toAdd[i] = r
+                else :
+                    print("sprime!=final")
+                    MaxQvalue = cnn_model_fn(sPrime, None, learn.ModeKeys.INFER).predictions["MaxQvalue"]
+                    print("test : "+str(MaxQvalue))
+                    toAdd[i] = r + gamma * MaxQvalue
+            # Pour les autres actions on garde les Qvalues prédites par le modèle 
+            else :
+                toAdd[i]=Qvalues[i]
+        
+        targets.append(toAdd) 
     
     return targets
 
