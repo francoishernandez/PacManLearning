@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+################# WORK IN PROGRESS ########################
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -115,7 +117,7 @@ def cnn_model_fn(features, labels, mode):
 			input=logits, axis=1),
 		"probabilities": tf.nn.softmax(
 			logits, name="softmax_tensor"),
-        # "qvalues": ???,
+        # "qvalues": a remplir,
         "MaxQvalue" : tf.reduce_max(
 			input_tensor=logits)
 	}
@@ -131,14 +133,11 @@ def cnn_model_fn(features, labels, mode):
 Qvalue_regressor = learn.Estimator(
 	model_fn=cnn_model_fn, model_dir="/tmp/convnet_model")
 
-print("Coucou")
-
 # affichage log des prédictions
 tensors_to_log = {"probabilities": "softmax_tensor"}
 logging_hook = tf.train.LoggingTensorHook(
 	tensors=tensors_to_log, every_n_iter=1)
 
-print("Coucou")
 
 ###################
 # DEEP Q LEARNING #
@@ -151,6 +150,8 @@ imax = 1000
 replayMemorySample = 10
 
 
+# INITIALISATION DU NETWORK ( A FINIR ) #
+
 ytest = np.random.rand(5,7194)*10
 
 # Pre-Train the model
@@ -161,6 +162,9 @@ Qvalue_regressor.fit(
         steps=1,
         monitors=[logging_hook])
 
+
+# ITERATIONS : #
+
 for i in range(imax):
     
     # Pour le reinforcement learning, ici devrait se situer le choix du coup à l'aide de :
@@ -168,11 +172,7 @@ for i in range(imax):
     # On effectue ensuite l'action, on observe la récompense, et on peux ainsi
     # l'ajouter à la replay memory.
     
-    print("Coucou")
-    
     targetQvalues = recalculate_target(replayMemory)
-
-    print("Coucou")
 
     # Train the model
     Qvalue_regressor.fit(
