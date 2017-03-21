@@ -30,6 +30,10 @@ trainStates = np.asarray(statesLoad)
 # Facteur de dévaluation
 gamma = 0.5
 
+def reformatFeatures(state):
+	return state/256
+
+
 # Cette fonction recalcule les Q-values cibles sur la replay memory
 # A appeler après chaque nouvelle expérimentation lors du reinforcement
 def recalculate_target(memory) :
@@ -62,9 +66,10 @@ def recalculate_target(memory) :
             else :
                 toAdd[i]=Qvalues[i]
         
-        targets.append(toAdd) 
+        targets.append(toAdd)
     
-    return targets
+	return targets
+
 
 # Modèle de notre réseau de neurones
 def cnn_model_fn(features, labels, mode):
@@ -76,11 +81,13 @@ def cnn_model_fn(features, labels, mode):
     input_layer = tf.to_float(input_layer)
     # Modèle simplifié avec un seul CNN
 
+
 	# Conv Layer
     conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
         strides=(5,5),
+
 		kernel_size=[10, 10],
 		padding="same",
 		activation=tf.nn.relu)
@@ -110,6 +117,7 @@ def cnn_model_fn(features, labels, mode):
         		global_step=tf.contrib.framework.get_global_step(),
         		learning_rate=0.01,
         		optimizer="SGD")
+
 
 	# Generate Predictions
     predictions = {
@@ -167,10 +175,10 @@ Qvalue_regressor.fit(
 
 for i in range(imax):
     
-    # Pour le reinforcement learning, ici devrait se situer le choix du coup à l'aide de :
-    # action = cnn_model_fn(currentState, None, learn.ModeKeys.INFER)["action"]
-    # On effectue ensuite l'action, on observe la récompense, et on peux ainsi
-    # l'ajouter à la replay memory.
+	# Pour le reinforcement learning, ici devrait se situer le choix du coup à l'aide de :
+	# action = cnn_model_fn(currentState, None, learn.ModeKeys.INFER)["action"]
+	# On effectue ensuite l'action, on observe la récompense, et on peux ainsi
+	# l'ajouter à la replay memory.
     
     targetQvalues = recalculate_target(replayMemory)
 

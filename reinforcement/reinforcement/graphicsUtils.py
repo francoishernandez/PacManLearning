@@ -69,6 +69,8 @@ def begin_graphics(width=640, height=480, color=formatColor(0, 0, 0), title=None
 
     # Create the root window
     _root_window = Tkinter.Tk()
+    # Added (0,0) to fix the position on the window
+    # This way we can use ImageGrab to extract the content of the window
     _root_window.geometry('%dx%d+%d+%d' % (width, height, 0, 0))
     _root_window.protocol('WM_DELETE_WINDOW', _destroy_window)
     _root_window.title(title or 'Graphics Window')

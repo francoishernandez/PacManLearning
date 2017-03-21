@@ -277,7 +277,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         agent = 0
         depth = 0
         bestAction, bestValue = self.expectimaxSearch(gameState, depth, agent)
+
+        # Call to the saveData method to add moves generated with expectimax to the training set
         saveData(bestAction, self.getExpectedReward(gameState, bestAction))
+
         return bestAction
 
     def getExpectedReward(self, gameState, action):

@@ -55,7 +55,10 @@ class KeyboardAgent(Agent):
             move = random.choice(legal)
 
         self.lastMove = move
+
+        # Call to the saveData method to add manually created data to the training set
         saveData(move, self.getExpectedReward(state, move))
+
         return move
 
     def getMove(self, legal):

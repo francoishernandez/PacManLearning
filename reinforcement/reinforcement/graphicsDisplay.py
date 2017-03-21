@@ -685,20 +685,35 @@ def saveFrame():
     writePostscript(name) # writes the current canvas
 
 
+# Saving image and action
+# ------------------------
+# This function was added in order to create a training set for a pacman IA
+# It can be used for supervised learning or deep Q learning
+# Images in the set are compressed and switched to grayscale
 def saveData(action, reward):
     global FRAME_NUMBER, IMAGE_OUTPUT_DIR, DATA_OUTPUT_DIR
     if not os.path.exists(IMAGE_OUTPUT_DIR): os.mkdir(IMAGE_OUTPUT_DIR)
     if not os.path.exists(DATA_OUTPUT_DIR): os.mkdir(DATA_OUTPUT_DIR)
     name = os.path.join(IMAGE_OUTPUT_DIR, 'image_%08d.jpg' % FRAME_NUMBER)
     FRAME_NUMBER += 1
+
+    # You might want to change the box boundaries to match the postion of the game winsow on your computer
     box = (43, 72, 766, 458)
     img = ImageGrab.grab(box)
+
+    # Apply transformation
     resized_img = np.asarray(img.resize((int(img.size[0]/3), int(img.size[1]/3))))
     grayscale_img = rgb2gray(resized_img)
+
+    # Save image
     Image.fromarray(grayscale_img, "L").save(name, "JPEG")
+
+    # Save matrix move and reward
     name = os.path.join(DATA_OUTPUT_DIR, 'move_%08d.gz' % FRAME_NUMBER)
     file = gzip.open(name, 'w')
     pickle.dump((grayscale_img, action, reward), file)
+    file.close()
+    
     print((grayscale_img, action, reward))
 
 
